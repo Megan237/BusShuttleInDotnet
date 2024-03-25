@@ -5,7 +5,7 @@ namespace WebMvc.Database;
 
 public class BusDb : DbContext
 {
-    public BusDb(DbContextOptions<TaskDb> options)
+    public BusDb(DbContextOptions<BusDb> options)
     : base(options)
     { }
     public DbSet<Bus> Bus { get; set; }

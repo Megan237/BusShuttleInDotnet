@@ -3,7 +3,7 @@ namespace WebMvc.Service;
 
 public interface LoopServiceInterface
 {
-    List<LoopList> GetLoops();
+    List<LoopModel> GetLoops();
     void UpdateLoopByID(int id, string name);
     void CreateLoop(string name);
 }

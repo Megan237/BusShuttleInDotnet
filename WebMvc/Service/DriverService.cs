@@ -14,9 +14,9 @@ namespace WebMvc.Service
         {
             _busDb = busDb;
         }
-        public List<DriverList> GetDrivers()
+        public List<DriverModel> GetDrivers()
         {
-            var driverList = _busDb.Driver.Select(d => new DriverList(d.Id, d.FirstName, d.LastName)).ToList();
+            var driverList = _busDb.Driver.Select(d => new DriverModel(d.Id, d.FirstName, d.LastName)).ToList();
             return driverList;
         }
 
@@ -30,22 +30,17 @@ namespace WebMvc.Service
                 _busDb.SaveChanges();
 
             }
-
-            public void CreateDriver(string firstname, string lastname)
+        }
+        public void CreateDriver(string firstname, string lastname)
+        {
+            var newDriver = new Database.Driver
             {
-                var newDriver = new Database.Driver
-                {
-                    FirstName = firstname,
-                    lastname = lastname
-                };
-                _busDb.Driver.Add(newDriver);
-                _busDb.SaveChanges();
-            }
+                FirstName = firstname,
+                LastName = lastname
+            };
+            _busDb.Driver.Add(newDriver);
+            _busDb.SaveChanges();
+
         }
     }
-
-
-
-
-
 }

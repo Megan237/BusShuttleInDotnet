@@ -3,7 +3,7 @@ namespace WebMvc.Service;
 
 public interface BusServiceInterface
 {
-    List<BusList> GetBusses();
+    List<BusModel> GetBusses();
     void UpdateBusByID(int id, int busNumber);
     void CreateBus(int busNumber);
 }

@@ -14,9 +14,9 @@ namespace WebMvc.Service
         {
             _busDb = busDb;
         }
-        public List<LoopList> GetLoops()
+        public List<LoopModel> GetLoops()
         {
-            var loopList = _busDb.Loop.Select(l => new LoopList(l.Id, l.Name)).ToList();
+            var loopList = _busDb.Loop.Select(l => new LoopModel(l.Id, l.Name)).ToList();
             return loopList;
         }
 
@@ -29,21 +29,15 @@ namespace WebMvc.Service
                 _busDb.SaveChanges();
 
             }
-
-            public void CreateLoop(string name)
+        }
+        public void CreateLoop(string name)
+        {
+            var newLoop = new Database.Loop
             {
-                var newLoop = new Database.Loop
-                {
-                    Name = name
-                };
-                _busDb.Loop.Add(newLoop);
-                _busDb.SaveChanges();
-            }
+                Name = name
+            };
+            _busDb.Loop.Add(newLoop);
+            _busDb.SaveChanges();
         }
     }
-
-
-
-
-
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using DomainModel;
 using Microsoft.VisualBasic;
 using WebMvc.Database;
+using DomainModel;
 namespace WebMvc.Service
 {
     public class RouteService : RouteServiceInterface
@@ -14,9 +15,9 @@ namespace WebMvc.Service
         {
             _busDb = busDb;
         }
-        public List<RouteList> GetRoutes()
+        public List<RouteModel> GetRoutes()
         {
-            var routeList = _busDb.Route.Select(r => new RouteList(r.Id, r.Order)).ToList();
+            var routeList = _busDb.Route.Select(r => new RouteModel(r.Id, r.Order)).ToList();
             return routeList;
         }
 
@@ -29,21 +30,15 @@ namespace WebMvc.Service
                 _busDb.SaveChanges();
 
             }
-
-            public void CreateRoute(int order)
+        }
+        public void CreateRoute(int order)
+        {
+            var newRoute = new Database.Route
             {
-                var newRoute = new Database.Route
-                {
-                    order = order
-                };
-                _busDb.Route.Add(newRoute);
-                _busDb.SaveChanges();
-            }
+                Order = order
+            };
+            _busDb.Route.Add(newRoute);
+            _busDb.SaveChanges();
         }
     }
-
-
-
-
-
 }

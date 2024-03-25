@@ -14,9 +14,9 @@ namespace WebMvc.Service
         {
             _busDb = busDb;
         }
-        public List<StopList> GetStops()
+        public List<StopModel> GetStops()
         {
-            var stopList = _busDb.Stop.Select(s => new StopList(s.Id, s.Name, s.Latitude, s.Longitude)).ToList();
+            var stopList = _busDb.Stop.Select(s => new StopModel(s.Id, s.Name, s.Latitude, s.Longitude)).ToList();
             return stopList;
         }
 
@@ -31,18 +31,19 @@ namespace WebMvc.Service
                 _busDb.SaveChanges();
 
             }
+        }
 
-            public void CreateStop(string name, double latitude, double longitude)
+        public void CreateStop(string name, double latitude, double longitude)
+        {
+            var newStop = new Database.Stop
             {
-                var newStop = new Database.Stop
-                {
-                    Name = name,
-                    Latitude = latitude,
-                    Longitude = longitude
-                };
-                _busDb.Stop.Add(newStop);
-                _busDb.SaveChanges();
-            }
+                Name = name,
+                Latitude = latitude,
+                Longitude = longitude
+            };
+            _busDb.Stop.Add(newStop);
+            _busDb.SaveChanges();
+
         }
     }
 

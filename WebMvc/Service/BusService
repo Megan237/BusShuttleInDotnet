@@ -14,9 +14,9 @@ namespace WebMvc.Service
         {
             _busDb = busDb;
         }
-        public List<BusList> GetBusses()
+        public List<BusModel> GetBusses()
         {
-            var busList = _busDb.Bus.Select(b => new BusList(b.Id, b.BusNumber)).ToList();
+            var busList = _busDb.Bus.Select(b => new BusModel(b.Id, b.BusNumber)).ToList();
             return busList;
         }
 

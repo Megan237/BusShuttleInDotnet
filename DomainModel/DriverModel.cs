@@ -1,12 +1,12 @@
 namespace DomainModel;
 
-public class Driver
+public class DriverModel
 {
     public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
 
-    public Driver(int id, string firstname, string lastname)
+    public DriverModel(int id, string firstname, string lastname)
     {
         Id = id;
         FirstName = firstname;

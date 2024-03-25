@@ -10,13 +10,13 @@ namespace WebMvc.Service
     {
         private readonly BusDb _busDb;
 
-        public BusService(BusDb busDb)
+        public EntryService(BusDb busDb)
         {
             _busDb = busDb;
         }
-        public List<EntryList> GetEntries()
+        public List<EntryModel> GetEntries()
         {
-            var entryList = _busDb.Entry.Select(e => new EntryList(e.Id, e.TimeStamp, e.Boarded, e.LeftBehind)).ToList();
+            var entryList = _busDb.Entry.Select(e => new EntryModel(e.Id, e.TimeStamp, e.Boarded, e.LeftBehind)).ToList();
             return entryList;
         }
 
@@ -31,23 +31,18 @@ namespace WebMvc.Service
                 _busDb.SaveChanges();
 
             }
-
-            public void CreateEntry(DateTime timeStamp, int boarded, int leftBehind)
+        }
+        public void CreateEntry(DateTime timeStamp, int boarded, int leftBehind)
+        {
+            var newEntry = new Database.Entry
             {
-                var newEntry = new Database.Entry
-                {
-                    TimeStamp = timeStamp,
-                    Boarded = boarded,
-                    LeftBehind = leftBehind
-                };
-                _busDb.Entry.Add(newEntry);
-                _busDb.SaveChanges();
-            }
+                TimeStamp = timeStamp,
+                Boarded = boarded,
+                LeftBehind = leftBehind
+            };
+            _busDb.Entry.Add(newEntry);
+            _busDb.SaveChanges();
+
         }
     }
-
-
-
-
-
 }

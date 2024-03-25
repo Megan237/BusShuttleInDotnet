@@ -1,11 +1,11 @@
 ﻿namespace DomainModel;
 
-public class Bus
+public class BusModel
 {
     public int Id { get; set; }
     public int BusNumber { get; set; }
 
-    public Bus(int id, int busNumber)
+    public BusModel(int id, int busNumber)
     {
         Id = id;
         BusNumber = busNumber;

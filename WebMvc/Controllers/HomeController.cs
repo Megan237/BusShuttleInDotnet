@@ -2,21 +2,26 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using WebMvc.Models;
 using DomainModel;
+using WebMvc.Service;
 
 namespace WebMvc.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    BusServiceInterface busService;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, BusServiceInterface busService)
     {
         _logger = logger;
+        this.busService = busService;
     }
 
     public IActionResult Index()
     {
-        return View();
+
+        return View(this.busService.GetBusses().Select(b => BusViewModel.FromBus(b)));
+
     }
 
     public IActionResult Privacy()
