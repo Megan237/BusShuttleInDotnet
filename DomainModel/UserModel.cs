@@ -8,7 +8,7 @@ public class UserModel
     public string UserName { get; set; }
     public string Password { get; set; }
 
-    public RouteModel(int id, string firstname, string lastname, string username, string password)
+    public UserModel(int id, string firstname, string lastname, string username, string password)
     {
         Id = id;
         FirstName = firstname;
