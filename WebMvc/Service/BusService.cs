@@ -29,16 +29,17 @@ namespace WebMvc.Service
                 _busDb.SaveChanges();
 
             }
+        }
 
-            public void CreateBus(int busNumber)
+        public void CreateBus(int busNumber)
+        {
+            var newBus = new Database.Bus
             {
-                var newBus = new Database.Bus
-                {
-                    BusNumber = busNumber
-                };
-                _busDb.Bus.Add(newBus);
-                _busDb.SaveChanges();
-            }
+                BusNumber = busNumber
+            };
+            _busDb.Bus.Add(newBus);
+            _busDb.SaveChanges();
+
         }
     }
 

@@ -14,6 +14,7 @@ public class BusDb : DbContext
     public DbSet<Loop> Loop { get; set; }
     public DbSet<Route> Route { get; set; }
     public DbSet<Stop> Stop { get; set; }
+    public DbSet<User> User { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     => options.UseSqlite($"Data Source=BusDb.db");
 }
@@ -52,4 +53,13 @@ public class Stop
     public string Name { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+}
+
+public class User
+{
+    public int Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string UserName { get; set; }
+    public string Password { get; set; }
 }
