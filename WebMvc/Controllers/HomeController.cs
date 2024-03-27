@@ -166,6 +166,50 @@ public class HomeController : Controller
 
     }
 
+    public IActionResult RouteEdit([FromRoute] int id)
+    {
+        var route = this.routeService.FindRouteByID(id);
+        var routeEditModel = RouteEditModel.FromRoute(route);
+        return View(routeEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RouteEdit(int id, [Bind("Order")] RouteEditModel route)
+    {
+        if (ModelState.IsValid)
+        {
+            this.routeService.UpdateRouteByID(id, route.Order);
+            return RedirectToAction("RouteView");
+        }
+        else
+        {
+            return View(route);
+        }
+    }
+
+    public IActionResult RouteCreate()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RouteCreate([Bind("Order")] RouteCreateModel route)
+    {
+        if (ModelState.IsValid)
+        {
+            this.routeService.CreateRoute(route.Order);
+            return RedirectToAction("RouteView");
+        }
+        else
+        {
+            return View();
+        }
+    }
+
+
     //Stop
 
     public IActionResult StopView()

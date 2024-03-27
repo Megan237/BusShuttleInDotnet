@@ -40,5 +40,15 @@ namespace WebMvc.Service
             _busDb.Route.Add(newRoute);
             _busDb.SaveChanges();
         }
+
+        public RouteModel? FindRouteByID(int id)
+        {
+            var route = _busDb.Route.FirstOrDefault(r => r.Id == id);
+            if (route != null)
+            {
+                return new RouteModel(route.Id, route.Order);
+            }
+            return null;
+        }
     }
 }
