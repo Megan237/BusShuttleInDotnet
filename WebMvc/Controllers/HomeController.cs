@@ -23,11 +23,26 @@ public class HomeController : Controller
         return View(this.busService.GetBusses().Select(b => BusViewModel.FromBus(b)));
 
     }
-
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    //This name needs to be ame as View
+    public IActionResult BusEdit([FromRoute] int id)
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var bus = this.busService.FindBusByID(id);
+        var busEditModel = BusEditModel.FromBus(bus);
+        return View(busEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> BusEdit(int id, [Bind("BusNumber")] BusEditModel bus)
+    {
+        if (ModelState.IsValid)
+        {
+            this.busService.UpdateBusByID(id, bus.BusNumber);
+            return RedirectToAction("Index");
+        }
+        else
+        {
+            return View(bus);
+        }
     }
 }

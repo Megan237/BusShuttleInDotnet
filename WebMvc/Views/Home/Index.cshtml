@@ -1,8 +1,37 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<WebMvc.Models.BusViewModel>
+@{
+    ViewData["Title"] = "Bus List";
 }
+<h2>Bus List</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BusNumber)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BusNumber)
+                </td>
+                <td>
+                    <a asp-action="BusEdit" asp-route-id="@item.Id">Edit</a> | <a asp-action="BusDeleteModel"
+                        asp-route-id="@item.Id">Delete</a>
+                </td>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="Create">Create a new Bus</a>

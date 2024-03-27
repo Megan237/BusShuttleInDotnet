@@ -41,6 +41,16 @@ namespace WebMvc.Service
             _busDb.SaveChanges();
 
         }
+
+        public BusModel? FindBusByID(int id)
+        {
+            var bus = _busDb.Bus.FirstOrDefault(b => b.Id == id);
+            if (bus != null)
+            {
+                return new BusModel(bus.Id, bus.BusNumber);
+            }
+            return null;
+        }
     }
 
 
