@@ -1,25 +1,37 @@
-@model WebMvc.Models.BusViewModel
+@model IEnumerable<WebMvc.Models.BusViewModel>
 @{
-    ViewData["Busses"] = "View Busses";
+    ViewData["Title"] = "Bus List";
 }
-<h2>View Busses</h2>
-<a asp-action="Index">Back to List</a>
-<div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Id
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Id
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BusNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BusNumber)
-        </dd>
-    </dl>
-</div>
+<h2>Bus List</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BusNumber)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BusNumber)
+                </td>
+                <td>
+                    <a asp-action="BusEdit" asp-route-id="@item.Id">Edit</a> | <a asp-action="BusDeleteModel"
+                        asp-route-id="@item.Id">Delete</a>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="BusCreate">Create a new Bus</a>

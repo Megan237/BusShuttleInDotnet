@@ -20,6 +20,13 @@ public class HomeController : Controller
     public IActionResult Index()
     {
 
+        return View();
+
+    }
+
+    public IActionResult BusView()
+    {
+
         return View(this.busService.GetBusses().Select(b => BusViewModel.FromBus(b)));
 
     }
@@ -38,7 +45,7 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.busService.UpdateBusByID(id, bus.BusNumber);
-            return RedirectToAction("Index");
+            return RedirectToAction("BusView");
         }
         else
         {
@@ -59,7 +66,7 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.busService.CreateBus(bus.BusNumber);
-            return RedirectToAction("Index");
+            return RedirectToAction("BusView");
         }
         else
         {
