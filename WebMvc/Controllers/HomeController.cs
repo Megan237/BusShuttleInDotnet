@@ -112,6 +112,51 @@ public class HomeController : Controller
 
     }
 
+    public IActionResult LoopEdit([FromRoute] int id)
+    {
+        var loop = this.loopService.FindLoopByID(id);
+        var loopEditModel = LoopEditModel.FromLoop(loop);
+        return View(loopEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LoopEdit(int id, [Bind("Name")] LoopEditModel loop)
+    {
+        if (ModelState.IsValid)
+        {
+            this.loopService.UpdateLoopByID(id, loop.Name);
+            return RedirectToAction("LoopView");
+        }
+        else
+        {
+            return View(loop);
+        }
+    }
+
+    public IActionResult LoopCreate()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LoopCreate([Bind("Name")] LoopCreateModel loop)
+    {
+        if (ModelState.IsValid)
+        {
+            this.loopService.CreateLoop(loop.Name);
+            return RedirectToAction("LoopView");
+        }
+        else
+        {
+            return View();
+        }
+    }
+
+
+
     //Route
 
     public IActionResult RouteView()

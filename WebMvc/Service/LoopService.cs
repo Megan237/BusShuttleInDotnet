@@ -39,5 +39,15 @@ namespace WebMvc.Service
             _busDb.Loop.Add(newLoop);
             _busDb.SaveChanges();
         }
+
+        public LoopModel? FindLoopByID(int id)
+        {
+            var loop = _busDb.Loop.FirstOrDefault(l => l.Id == id);
+            if (loop != null)
+            {
+                return new LoopModel(loop.Id, loop.Name);
+            }
+            return null;
+        }
     }
 }
