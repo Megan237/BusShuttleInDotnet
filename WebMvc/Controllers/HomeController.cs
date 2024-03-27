@@ -45,4 +45,25 @@ public class HomeController : Controller
             return View(bus);
         }
     }
+
+    public IActionResult BusCreate()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> BusCreate([Bind("BusNumber")] BusCreateModel bus)
+    {
+        if (ModelState.IsValid)
+        {
+            this.busService.CreateBus(bus.BusNumber);
+            return RedirectToAction("Index");
+        }
+        else
+        {
+            return View();
+        }
+    }
 }
