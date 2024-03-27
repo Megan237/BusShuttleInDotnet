@@ -18,6 +18,7 @@ public class Program
 
         builder.Services.AddDbContext<BusDb>(Options => Options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
         builder.Services.AddScoped<BusServiceInterface, BusService>();
+        builder.Services.AddScoped<LoopServiceInterface, LoopService>();
 
         var app = builder.Build();
 

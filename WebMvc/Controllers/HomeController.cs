@@ -10,11 +10,13 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     BusServiceInterface busService;
+    LoopServiceInterface loopService;
 
-    public HomeController(ILogger<HomeController> logger, BusServiceInterface busService)
+    public HomeController(ILogger<HomeController> logger, BusServiceInterface busService, LoopServiceInterface loopService)
     {
         _logger = logger;
         this.busService = busService;
+        this.loopService = loopService;
     }
 
     public IActionResult Index()
@@ -24,13 +26,15 @@ public class HomeController : Controller
 
     }
 
+    //Bus
+
     public IActionResult BusView()
     {
 
         return View(this.busService.GetBusses().Select(b => BusViewModel.FromBus(b)));
 
     }
-    //This name needs to be ame as View
+    //This name needs to be same as View
     public IActionResult BusEdit([FromRoute] int id)
     {
         var bus = this.busService.FindBusByID(id);
@@ -73,4 +77,24 @@ public class HomeController : Controller
             return View();
         }
     }
+
+
+    //Driver
+
+
+    //Entry
+
+
+    //Loop
+    public IActionResult LoopView()
+    {
+
+        return View(this.loopService.GetLoops().Select(l => LoopViewModel.FromLoop(l)));
+
+    }
+
+    //Route
+
+
+    //Stop
 }
