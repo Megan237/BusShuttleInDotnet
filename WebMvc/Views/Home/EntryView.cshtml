@@ -1,0 +1,49 @@
+@model IEnumerable<WebMvc.Models.EntryViewModel>
+@{
+    ViewData["Title"] = "Entry List";
+}
+<h2>Entry List</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TimeStamp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Boarded)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LeftBehind)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TimeStamp)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Boarded)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LeftBehind)
+                </td>
+                <td>
+                    <a asp-action="EntryEdit" asp-route-id="@item.Id">Edit</a> | <a asp-action="EntryDeleteModel"
+                        asp-route-id="@item.Id">Delete</a>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="EntryCreate">Create a new Entry</a>

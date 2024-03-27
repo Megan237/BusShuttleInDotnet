@@ -11,12 +11,20 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     BusServiceInterface busService;
     LoopServiceInterface loopService;
+    DriverServiceInterface driverService;
+    EntryServiceInterface entryService;
+    RouteServiceInterface routeService;
+    StopServiceInterface stopService;
 
-    public HomeController(ILogger<HomeController> logger, BusServiceInterface busService, LoopServiceInterface loopService)
+    public HomeController(ILogger<HomeController> logger, BusServiceInterface busService, LoopServiceInterface loopService, DriverServiceInterface driverService, EntryServiceInterface entryService, RouteServiceInterface routeService, StopServiceInterface stopService)
     {
         _logger = logger;
         this.busService = busService;
         this.loopService = loopService;
+        this.driverService = driverService;
+        this.entryService = entryService;
+        this.routeService = routeService;
+        this.stopService = stopService;
     }
 
     public IActionResult Index()
@@ -80,10 +88,21 @@ public class HomeController : Controller
 
 
     //Driver
+    public IActionResult DriverView()
+    {
 
+        return View(this.driverService.GetDrivers().Select(d => DriverViewModel.FromDriver(d)));
+
+    }
 
     //Entry
 
+    public IActionResult EntryView()
+    {
+
+        return View(this.entryService.GetEntries().Select(e => EntryViewModel.FromEntry(e)));
+
+    }
 
     //Loop
     public IActionResult LoopView()
@@ -95,6 +114,19 @@ public class HomeController : Controller
 
     //Route
 
+    public IActionResult RouteView()
+    {
+
+        return View(this.routeService.GetRoutes().Select(r => RouteViewModel.FromRoute(r)));
+
+    }
 
     //Stop
+
+    public IActionResult StopView()
+    {
+
+        return View(this.stopService.GetStops().Select(s => StopViewModel.FromStop(s)));
+
+    }
 }
