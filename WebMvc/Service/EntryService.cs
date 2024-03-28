@@ -44,5 +44,15 @@ namespace WebMvc.Service
             _busDb.SaveChanges();
 
         }
+
+        public EntryModel? FindEntryByID(int id)
+        {
+            var entry = _busDb.Entry.FirstOrDefault(e => e.Id == id);
+            if (entry != null)
+            {
+                return new EntryModel(entry.Id, entry.TimeStamp, entry.Boarded, entry.LeftBehind);
+            }
+            return null;
+        }
     }
 }

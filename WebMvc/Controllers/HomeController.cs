@@ -147,6 +147,49 @@ public class HomeController : Controller
 
     }
 
+    public IActionResult EntryEdit([FromRoute] int id)
+    {
+        var entry = this.entryService.FindEntryByID(id);
+        var entryEditModel = EntryEditModel.FromEntry(entry);
+        return View(entryEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EntryEdit(int id, [Bind("TimeStamp, Boarded, LeftBehind")] EntryEditModel entry)
+    {
+        if (ModelState.IsValid)
+        {
+            this.entryService.UpdateEntryByID(id, entry.TimeStamp, entry.Boarded, entry.LeftBehind);
+            return RedirectToAction("EntryView");
+        }
+        else
+        {
+            return View(entry);
+        }
+    }
+
+    public IActionResult EntryCreate()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EntryCreate([Bind("TimeStamp, Boarded, LeftBehind")] EntryCreateModel entry)
+    {
+        if (ModelState.IsValid)
+        {
+            this.entryService.CreateEntry(entry.TimeStamp, entry.Boarded, entry.LeftBehind);
+            return RedirectToAction("EntryView");
+        }
+        else
+        {
+            return View();
+        }
+    }
+
     //Loop
     public IActionResult LoopView()
     {
