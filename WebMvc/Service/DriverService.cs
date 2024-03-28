@@ -42,5 +42,16 @@ namespace WebMvc.Service
             _busDb.SaveChanges();
 
         }
+
+
+        public DriverModel? FindDriverByID(int id)
+        {
+            var driver = _busDb.Driver.FirstOrDefault(d => d.Id == id);
+            if (driver != null)
+            {
+                return new DriverModel(driver.Id, driver.FirstName, driver.LastName);
+            }
+            return null;
+        }
     }
 }

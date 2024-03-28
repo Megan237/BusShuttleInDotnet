@@ -94,6 +94,49 @@ public class HomeController : Controller
         return View(this.driverService.GetDrivers().Select(d => DriverViewModel.FromDriver(d)));
 
     }
+    public IActionResult DriverEdit([FromRoute] int id)
+    {
+        var driver = this.driverService.FindDriverByID(id);
+        var driverEditModel = DriverEditModel.FromDriver(driver);
+        return View(driverEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DriverEdit(int id, [Bind("FirstName, LastName")] DriverEditModel driver)
+    {
+        if (ModelState.IsValid)
+        {
+            this.driverService.UpdateDriverByID(id, driver.FirstName, driver.LastName);
+            return RedirectToAction("DriverView");
+        }
+        else
+        {
+            return View(driver);
+        }
+    }
+
+    public IActionResult DriverCreate()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DriverCreate([Bind("FirstName, LastName")] DriverCreateModel driver)
+    {
+        if (ModelState.IsValid)
+        {
+            this.driverService.CreateDriver(driver.FirstName, driver.LastName);
+            return RedirectToAction("DriverView");
+        }
+        else
+        {
+            return View();
+        }
+    }
+
 
     //Entry
 
