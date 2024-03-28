@@ -55,6 +55,15 @@ namespace WebMvc.Service
             }
             return null;
         }
+        public void DeleteStop(int id)
+        {
+            var stop = _busDb.Stop.FirstOrDefault(s => s.Id == id);
+            if (stop != null)
+            {
+                _busDb.Stop.Remove(stop);
+                _busDb.SaveChanges();
+            }
+        }
     }
 
 

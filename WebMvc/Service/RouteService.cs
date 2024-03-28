@@ -50,5 +50,14 @@ namespace WebMvc.Service
             }
             return null;
         }
+        public void DeleteRoute(int id)
+        {
+            var route = _busDb.Route.FirstOrDefault(r => r.Id == id);
+            if (route != null)
+            {
+                _busDb.Route.Remove(route);
+                _busDb.SaveChanges();
+            }
+        }
     }
 }

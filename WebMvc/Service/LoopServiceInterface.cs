@@ -7,4 +7,5 @@ public interface LoopServiceInterface
     void UpdateLoopByID(int id, string name);
     void CreateLoop(string name);
     LoopModel? FindLoopByID(int id);
+    void DeleteLoop(int id);
 }

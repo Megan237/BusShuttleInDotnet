@@ -49,5 +49,14 @@ namespace WebMvc.Service
             }
             return null;
         }
+        public void DeleteLoop(int id)
+        {
+            var loop = _busDb.Loop.FirstOrDefault(l => l.Id == id);
+            if (loop != null)
+            {
+                _busDb.Loop.Remove(loop);
+                _busDb.SaveChanges();
+            }
+        }
     }
 }

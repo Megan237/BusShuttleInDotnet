@@ -8,4 +8,5 @@ public interface BusServiceInterface
     void CreateBus(int busNumber);
 
     BusModel? FindBusByID(int id);
+    void DeleteBus(int id);
 }

@@ -42,6 +42,22 @@ public class HomeController : Controller
         return View(this.busService.GetBusses().Select(b => BusViewModel.FromBus(b)));
 
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult BusDelete(int id)
+    {
+        if (ModelState.IsValid)
+        {
+            this.busService.DeleteBus(id);
+            return RedirectToAction("BusView");
+        }
+        else
+        {
+            return View();
+        }
+    }
+
     //This name needs to be same as View
     public IActionResult BusEdit([FromRoute] int id)
     {
@@ -93,6 +109,20 @@ public class HomeController : Controller
 
         return View(this.driverService.GetDrivers().Select(d => DriverViewModel.FromDriver(d)));
 
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DriverDelete(int id)
+    {
+        if (ModelState.IsValid)
+        {
+            this.driverService.DeleteDriver(id);
+            return RedirectToAction("DriverView");
+        }
+        else
+        {
+            return View();
+        }
     }
     public IActionResult DriverEdit([FromRoute] int id)
     {
@@ -147,6 +177,21 @@ public class HomeController : Controller
 
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult EntryDelete(int id)
+    {
+        if (ModelState.IsValid)
+        {
+            this.entryService.DeleteEntry(id);
+            return RedirectToAction("EntryView");
+        }
+        else
+        {
+            return View();
+        }
+    }
+
     public IActionResult EntryEdit([FromRoute] int id)
     {
         var entry = this.entryService.FindEntryByID(id);
@@ -198,6 +243,20 @@ public class HomeController : Controller
 
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult LoopDelete(int id)
+    {
+        if (ModelState.IsValid)
+        {
+            this.loopService.DeleteLoop(id);
+            return RedirectToAction("LoopView");
+        }
+        else
+        {
+            return View();
+        }
+    }
     public IActionResult LoopEdit([FromRoute] int id)
     {
         var loop = this.loopService.FindLoopByID(id);
@@ -252,6 +311,20 @@ public class HomeController : Controller
 
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult RouteDelete(int id)
+    {
+        if (ModelState.IsValid)
+        {
+            this.routeService.DeleteRoute(id);
+            return RedirectToAction("RouteView");
+        }
+        else
+        {
+            return View();
+        }
+    }
     public IActionResult RouteEdit([FromRoute] int id)
     {
         var route = this.routeService.FindRouteByID(id);
@@ -303,6 +376,21 @@ public class HomeController : Controller
 
         return View(this.stopService.GetStops().Select(s => StopViewModel.FromStop(s)));
 
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult StopDelete(int id)
+    {
+        if (ModelState.IsValid)
+        {
+            this.stopService.DeleteStop(id);
+            return RedirectToAction("StopView");
+        }
+        else
+        {
+            return View();
+        }
     }
     public IActionResult StopEdit([FromRoute] int id)
     {

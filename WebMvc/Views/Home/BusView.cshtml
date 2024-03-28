@@ -7,9 +7,6 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.BusNumber)
             </th>
             <th></th>
@@ -20,14 +17,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.BusNumber)
                 </td>
                 <td>
-                    <a asp-action="BusEdit" asp-route-id="@item.Id">Edit</a> | <a asp-action="BusDeleteModel"
-                        asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="BusEdit" asp-route-id="@item.Id">Edit</a> | <form asp-action="BusDelete"
+                        asp-route-id="@item.Id" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to delete this?');">Delete</button>
+                    </form>
                 </td>
 
             </tr>

@@ -51,6 +51,15 @@ namespace WebMvc.Service
             }
             return null;
         }
+        public void DeleteBus(int id)
+        {
+            var bus = _busDb.Bus.FirstOrDefault(b => b.Id == id);
+            if (bus != null)
+            {
+                _busDb.Bus.Remove(bus);
+                _busDb.SaveChanges();
+            }
+        }
     }
 
 

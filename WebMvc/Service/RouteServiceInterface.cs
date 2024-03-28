@@ -7,4 +7,5 @@ public interface RouteServiceInterface
     void UpdateRouteByID(int id, int order);
     void CreateRoute(int order);
     RouteModel? FindRouteByID(int id);
+    void DeleteRoute(int id);
 }

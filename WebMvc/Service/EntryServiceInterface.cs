@@ -7,4 +7,5 @@ public interface EntryServiceInterface
     void UpdateEntryByID(int id, DateTime timeStamp, int boarded, int leftBehind);
     void CreateEntry(DateTime timeStamp, int boarded, int leftBehind);
     EntryModel? FindEntryByID(int id);
+    void DeleteEntry(int id);
 }
