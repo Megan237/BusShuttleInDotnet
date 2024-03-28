@@ -45,6 +45,16 @@ namespace WebMvc.Service
             _busDb.SaveChanges();
 
         }
+
+        public StopModel? FindStopByID(int id)
+        {
+            var stop = _busDb.Stop.FirstOrDefault(s => s.Id == id);
+            if (stop != null)
+            {
+                return new StopModel(stop.Id, stop.Name, stop.Latitude, stop.Longitude);
+            }
+            return null;
+        }
     }
 
 

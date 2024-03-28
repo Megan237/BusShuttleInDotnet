@@ -304,4 +304,46 @@ public class HomeController : Controller
         return View(this.stopService.GetStops().Select(s => StopViewModel.FromStop(s)));
 
     }
+    public IActionResult StopEdit([FromRoute] int id)
+    {
+        var stop = this.stopService.FindStopByID(id);
+        var stopEditModel = StopEditModel.FromStop(stop);
+        return View(stopEditModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> StopEdit(int id, [Bind("Name, Latitude, Longitude")] StopEditModel stop)
+    {
+        if (ModelState.IsValid)
+        {
+            this.stopService.UpdateStopByID(id, stop.Name, stop.Latitude, stop.Longitude);
+            return RedirectToAction("StopView");
+        }
+        else
+        {
+            return View(stop);
+        }
+    }
+
+    public IActionResult StopCreate()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> StopCreate([Bind("Name, Latitude, Longitude")] StopCreateModel stop)
+    {
+        if (ModelState.IsValid)
+        {
+            this.stopService.CreateStop(stop.Name, stop.Latitude, stop.Longitude);
+            return RedirectToAction("StopView");
+        }
+        else
+        {
+            return View();
+        }
+    }
 }
