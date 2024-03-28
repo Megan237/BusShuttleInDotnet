@@ -7,7 +7,9 @@ public class UserModel
     public string LastName { get; set; }
     public string UserName { get; set; }
     public string Password { get; set; }
-
+    public UserModel()
+    {
+    }
     public UserModel(int id, string firstname, string lastname, string username, string password)
     {
         Id = id;

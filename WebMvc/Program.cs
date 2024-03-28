@@ -23,6 +23,7 @@ public class Program
         builder.Services.AddScoped<EntryServiceInterface, EntryService>();
         builder.Services.AddScoped<RouteServiceInterface, RouteService>();
         builder.Services.AddScoped<StopServiceInterface, StopService>();
+        builder.Services.AddScoped<UserServiceInterface, UserService>();
 
         var app = builder.Build();
 

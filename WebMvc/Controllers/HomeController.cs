@@ -15,8 +15,9 @@ public class HomeController : Controller
     EntryServiceInterface entryService;
     RouteServiceInterface routeService;
     StopServiceInterface stopService;
+    UserServiceInterface userService;
 
-    public HomeController(ILogger<HomeController> logger, BusServiceInterface busService, LoopServiceInterface loopService, DriverServiceInterface driverService, EntryServiceInterface entryService, RouteServiceInterface routeService, StopServiceInterface stopService)
+    public HomeController(ILogger<HomeController> logger, BusServiceInterface busService, LoopServiceInterface loopService, DriverServiceInterface driverService, EntryServiceInterface entryService, RouteServiceInterface routeService, StopServiceInterface stopService, UserServiceInterface userService)
     {
         _logger = logger;
         this.busService = busService;
@@ -25,6 +26,7 @@ public class HomeController : Controller
         this.entryService = entryService;
         this.routeService = routeService;
         this.stopService = stopService;
+        this.userService = userService;
     }
 
     public IActionResult Index()
@@ -428,6 +430,32 @@ public class HomeController : Controller
         {
             this.stopService.CreateStop(stop.Name, stop.Latitude, stop.Longitude);
             return RedirectToAction("StopView");
+        }
+        else
+        {
+            return View();
+        }
+    }
+
+    //Login
+
+
+    //Register
+
+    public IActionResult RegisterView()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegisterView([Bind("FirstName, LastName, UserName, Password")] UserModel user)
+    {
+        if (ModelState.IsValid)
+        {
+            this.userService.CreateUser(user.FirstName, user.LastName, user.UserName, user.Password);
+            return RedirectToAction("Index");
         }
         else
         {
