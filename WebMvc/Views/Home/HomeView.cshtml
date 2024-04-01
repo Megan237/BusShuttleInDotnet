@@ -1,0 +1,36 @@
+@model IEnumerable<WebMvc.Models.BusViewModel>
+@{
+    ViewData["Title"] = "Manager Dashboard";
+}
+<h2>Manager Dashboard</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="BusView">Buses</a>
+            </th>
+            <th>
+                <a asp-action="DriverView">Drivers</a>
+            </th>
+            <th>
+                <a asp-action="EntryView">Entries</a>
+            </th>
+            <th>
+                <a asp-action="LoopView">Loops</a>
+            </th>
+            <th>
+                <a asp-action="RouteView">Routes</a>
+            </th>
+            <th>
+                <a asp-action="StopView">Stops</a>
+            </th>
+            <th>
+                <a asp-action="LoginView">Login</a>
+            </th>
+            <th>
+                <a asp-action="RegisterView">Register</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+</table>

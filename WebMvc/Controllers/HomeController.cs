@@ -29,7 +29,15 @@ public class HomeController : Controller
         this.userService = userService;
     }
 
+
     public IActionResult Index()
+    {
+
+        return View();
+
+    }
+
+    public IActionResult HomeView()
     {
 
         return View();
@@ -439,6 +447,34 @@ public class HomeController : Controller
 
     //Login
 
+    // public IActionResult Index()
+    // {
+    //     return View();
+    // }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Index([Bind("UserName, Password")] UserModel user)
+    {
+        if (ModelState.IsValid)
+        {
+            Console.WriteLine("model is valid");
+            if (this.userService.VerifyUserAsManager(user.UserName, user.Password))
+            {
+
+                return RedirectToAction("HomeView");
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+        else
+        {
+            return View();
+        }
+    }
 
     //Register
 

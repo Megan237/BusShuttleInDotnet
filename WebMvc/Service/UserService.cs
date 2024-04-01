@@ -44,5 +44,27 @@ namespace WebMvc.Service
             }
             return null;
         }
+        public bool VerifyUserAsManager(string userName, string password)
+        {
+            var user = _busDb.User.FirstOrDefault(u => u.UserName == userName && u.Password == password);
+            if (user != null && user.Id == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool VerifyUserAsDriver(string userName, string password)
+        {
+            var user = _busDb.User.FirstOrDefault(u => u.UserName == userName && u.Password == password);
+            if (user != null && user.Id != 1)
+            {
+                var driver = _busDb.Driver.FirstOrDefault(d => d.FirstName == user.FirstName && d.LastName == user.LastName);
+                if (driver != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
