@@ -1,3 +1,4 @@
+using DomainModel;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,10 @@ public class Route
 {
     public int Id { get; set; }
     public int Order { get; set; }
+    public int StopId { get; set; }
+    public StopModel Stop { get; set; }
+    public int LoopId { get; set; }
+    public LoopModel Loop { get; set; }
 }
 public class Stop
 {

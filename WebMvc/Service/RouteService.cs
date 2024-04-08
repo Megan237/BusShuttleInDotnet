@@ -17,7 +17,7 @@ namespace WebMvc.Service
         }
         public List<RouteModel> GetRoutes()
         {
-            var routeList = _busDb.Route.Select(r => new RouteModel(r.Id, r.Order, route.StopId, route.Stop, route.LoopId, route.Loop)).ToList();
+            var routeList = _busDb.Route.Select(r => new RouteModel(r.Id, r.Order, r.StopId, r.Stop, r.LoopId, r.Loop)).ToList();
             return routeList;
         }
 

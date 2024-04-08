@@ -19,8 +19,12 @@ public class RouteModel
         Loop = loop;
     }
 
-    public void Update(int order)
+    public void Update(int order, int stopId, StopModel stop, int loopId, LoopModel loop)
     {
         Order = order;
+        StopId = stopId;
+        Stop = stop;
+        LoopId = loopId;
+        Loop = loop;
     }
 }

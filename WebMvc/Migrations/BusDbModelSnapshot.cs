@@ -17,6 +17,42 @@ namespace WebMvc.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
 
+            modelBuilder.Entity("DomainModel.LoopModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LoopModel");
+                });
+
+            modelBuilder.Entity("DomainModel.StopModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StopModel");
+                });
+
             modelBuilder.Entity("WebMvc.Database.Bus", b =>
                 {
                     b.Property<int>("Id")
@@ -91,10 +127,20 @@ namespace WebMvc.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("LoopId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Order")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("StopId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("LoopId");
+
+                    b.HasIndex("StopId");
 
                     b.ToTable("Route");
                 });
@@ -145,6 +191,25 @@ namespace WebMvc.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("WebMvc.Database.Route", b =>
+                {
+                    b.HasOne("DomainModel.LoopModel", "Loop")
+                        .WithMany()
+                        .HasForeignKey("LoopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DomainModel.StopModel", "Stop")
+                        .WithMany()
+                        .HasForeignKey("StopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Loop");
+
+                    b.Navigation("Stop");
                 });
 #pragma warning restore 612, 618
         }
