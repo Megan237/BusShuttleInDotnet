@@ -344,11 +344,11 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RouteEdit(int id, [Bind("Order")] RouteEditModel route)
+    public async Task<IActionResult> RouteEdit(int id, [Bind("Order, StopId, Stop, LoopId, Loop")] RouteEditModel route)
     {
         if (ModelState.IsValid)
         {
-            this.routeService.UpdateRouteByID(id, route.Order);
+            this.routeService.UpdateRouteByID(id, route.Order, route.StopId, route.Stop, route.LoopId, route.Loop);
             return RedirectToAction("RouteView");
         }
         else
@@ -365,11 +365,11 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RouteCreate([Bind("Order")] RouteCreateModel route)
+    public async Task<IActionResult> RouteCreate([Bind("Order, StopId, Stop, LoopId, Loop")] RouteCreateModel route)
     {
         if (ModelState.IsValid)
         {
-            this.routeService.CreateRoute(route.Order);
+            this.routeService.CreateRoute(route.Order, route.StopId, route.Stop, route.LoopId, route.Loop);
             return RedirectToAction("RouteView");
         }
         else

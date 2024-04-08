@@ -10,6 +10,10 @@ namespace WebMvc.Models
     {
         public int Id { get; set; }
         public int Order { get; set; }
+        public int StopId { get; set; }
+        public StopModel Stop { get; set; }
+        public int LoopId { get; set; }
+        public LoopModel Loop { get; set; }
 
 
         public static RouteEditModel FromRoute(RouteModel route)
@@ -17,7 +21,11 @@ namespace WebMvc.Models
             return new RouteEditModel
             {
                 Id = route.Id,
-                Order = route.Order
+                Order = route.Order,
+                StopId = route.StopId,
+                Stop = route.Stop,
+                LoopId = route.LoopId,
+                Loop = route.Loop,
             };
         }
     }

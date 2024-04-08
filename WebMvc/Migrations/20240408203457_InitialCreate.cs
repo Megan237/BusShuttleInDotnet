@@ -67,16 +67,16 @@ namespace WebMvc.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Route",
+                name: "LoopModel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Order = table.Column<int>(type: "INTEGER", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Route", x => x.Id);
+                    table.PrimaryKey("PK_LoopModel", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,6 +95,21 @@ namespace WebMvc.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "StopModel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Latitude = table.Column<double>(type: "REAL", nullable: false),
+                    Longitude = table.Column<double>(type: "REAL", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StopModel", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
@@ -109,6 +124,43 @@ namespace WebMvc.Migrations
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Route",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Order = table.Column<int>(type: "INTEGER", nullable: false),
+                    StopId = table.Column<int>(type: "INTEGER", nullable: false),
+                    LoopId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Route", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Route_LoopModel_LoopId",
+                        column: x => x.LoopId,
+                        principalTable: "LoopModel",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Route_StopModel_StopId",
+                        column: x => x.StopId,
+                        principalTable: "StopModel",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Route_LoopId",
+                table: "Route",
+                column: "LoopId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Route_StopId",
+                table: "Route",
+                column: "StopId");
         }
 
         /// <inheritdoc />
@@ -134,6 +186,12 @@ namespace WebMvc.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "LoopModel");
+
+            migrationBuilder.DropTable(
+                name: "StopModel");
         }
     }
 }

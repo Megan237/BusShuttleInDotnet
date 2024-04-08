@@ -11,5 +11,9 @@ namespace WebMvc.Models
         public int Id { get; set; }
 
         public int Order { get; set; }
+        public int StopId { get; set; }
+        public StopModel Stop { get; set; }
+        public int LoopId { get; set; }
+        public LoopModel Loop { get; set; }
     }
 }
