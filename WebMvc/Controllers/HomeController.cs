@@ -44,6 +44,12 @@ public class HomeController : Controller
         return View();
 
     }
+    public IActionResult DriverWaiting()
+    {
+
+        return View();
+
+    }
 
     //Bus
 
@@ -494,11 +500,6 @@ public class HomeController : Controller
 
     //Login
 
-    // public IActionResult Index()
-    // {
-    //     return View();
-    // }
-
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -514,7 +515,14 @@ public class HomeController : Controller
             }
             else
             {
-                return RedirectToAction("Index");
+                if (this.userService.VerifyUserAsDriver(user.UserName, user.Password))
+                {
+                    return RedirectToAction("DriverSignOn");
+                }
+                else
+                {
+                    return RedirectToAction("DriverWaiting");
+                }
             }
         }
         else
