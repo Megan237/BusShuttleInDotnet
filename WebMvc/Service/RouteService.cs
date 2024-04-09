@@ -5,6 +5,7 @@ using DomainModel;
 using Microsoft.VisualBasic;
 using WebMvc.Database;
 using DomainModel;
+using Microsoft.EntityFrameworkCore;
 namespace WebMvc.Service
 {
     public class RouteService : RouteServiceInterface
@@ -17,33 +18,29 @@ namespace WebMvc.Service
         }
         public List<RouteModel> GetRoutes()
         {
-            var routeList = _busDb.Route.Select(r => new RouteModel(r.Id, r.Order, r.StopId, r.Stop, r.LoopId, r.Loop)).ToList();
+            var routeList = _busDb.Route.Select(r => new RouteModel(r.Id, r.Order, r.StopId, r.LoopId)).ToList();
             return routeList;
         }
 
-        public void UpdateRouteByID(int id, int order, int stopId, StopModel stop, int loopId, LoopModel loop)
+        public void UpdateRouteByID(int id, int order, int stopId, int loopId)
         {
             var route = _busDb.Route.FirstOrDefault(r => r.Id == id);
             if (route != null)
             {
                 route.Order = order;
                 route.StopId = stopId;
-                route.Stop = stop;
                 route.LoopId = loopId;
-                route.Loop = loop;
                 _busDb.SaveChanges();
 
             }
         }
-        public void CreateRoute(int order, int stopId, StopModel stop, int loopId, LoopModel loop)
+        public void CreateRoute(int order, int stopId, int loopId)
         {
             var newRoute = new Database.Route
             {
                 Order = order,
                 StopId = stopId,
-                Stop = stop,
                 LoopId = loopId,
-                Loop = loop,
 
             };
             _busDb.Route.Add(newRoute);
@@ -55,7 +52,7 @@ namespace WebMvc.Service
             var route = _busDb.Route.FirstOrDefault(r => r.Id == id);
             if (route != null)
             {
-                return new RouteModel(route.Id, route.Order, route.StopId, route.Stop, route.LoopId, route.Loop);
+                return new RouteModel(route.Id, route.Order, route.StopId, route.LoopId);
             }
             return null;
         }
@@ -83,6 +80,32 @@ namespace WebMvc.Service
                 updatedRoute.Order = currentOrder;
                 _busDb.SaveChangesAsync();
             }
+        }
+
+        public class RouteDetailDTO
+        {
+            public int Id { get; set; }
+            public int Order { get; set; }
+            public string StopName { get; set; }
+            public string LoopName { get; set; }
+
+            // Add other properties as needed
+        }
+
+        public List<RouteDetailDTO> GetRouteDetails()
+        {
+            var routeDetails = _busDb.Route
+                .Include(r => r.Stop) // Ensure your Route entity has navigation properties to Stop and Loop
+                .Include(r => r.Loop)
+                .Select(r => new RouteDetailDTO
+                {
+                    Id = r.Id,
+                    Order = r.Order,
+                    StopName = r.Stop.Name, // Assuming Stop has a Name property
+                    LoopName = r.Loop.Name // Assuming Loop has a Name property
+                }).ToList();
+
+            return routeDetails;
         }
     }
 }

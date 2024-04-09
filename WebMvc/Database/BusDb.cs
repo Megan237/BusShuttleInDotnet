@@ -18,6 +18,24 @@ public class BusDb : DbContext
     public DbSet<User> User { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     => options.UseSqlite($"Data Source=BusDb.db");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Route>()
+            .HasOne(r => r.Stop)
+            .WithMany()
+            .HasForeignKey(r => r.StopId)
+            .OnDelete(DeleteBehavior.Restrict); // Or .Cascade as needed
+
+        modelBuilder.Entity<Route>()
+            .HasOne(r => r.Loop)
+            .WithMany()
+            .HasForeignKey(r => r.LoopId)
+            .OnDelete(DeleteBehavior.Restrict); // Or .Cascade as needed
+    }
+
 }
 public class Bus
 {
@@ -48,9 +66,9 @@ public class Route
     public int Id { get; set; }
     public int Order { get; set; }
     public int StopId { get; set; }
-    public StopModel Stop { get; set; }
+    public Stop Stop { get; set; }
     public int LoopId { get; set; }
-    public LoopModel Loop { get; set; }
+    public Loop Loop { get; set; }
 }
 public class Stop
 {

@@ -10,14 +10,14 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Order" class="control-label"></label>
-                <input asp-for="Order" class="form-control" />
-                <span asp-validation-for="Order" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="LoopId" class="control-label">Loop</label>
                 <select asp-for="LoopId" class="form-control" asp-items="ViewBag.AvailableLoops"></select>
                 <span asp-validation-for="LoopId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StopId" class="control-label">Loop</label>
+                <select asp-for="StopId" class="form-control" asp-items="ViewBag.AvailableStops"></select>
+                <span asp-validation-for="StopId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

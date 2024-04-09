@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebMvc.Models;
 using DomainModel;
 using WebMvc.Service;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace WebMvc.Controllers;
 
@@ -316,9 +317,20 @@ public class HomeController : Controller
 
     public IActionResult RouteView()
     {
+        var routeDetailsDto = routeService.GetRouteDetails();
 
-        return View(this.routeService.GetRoutes().Select(r => RouteViewModel.FromRoute(r)));
+        // Convert RouteDetailDTO list to RouteViewModel list
+        var routeViewModels = routeDetailsDto.Select(dto => new RouteViewModel
+        {
+            Id = dto.Id,
+            Order = dto.Order,
+            StopName = dto.StopName,
+            LoopName = dto.LoopName,
+            // Assign other properties as necessary
+        }).ToList();
 
+        // Pass the RouteViewModel list to the view
+        return View(routeViewModels);
     }
 
     [HttpPost]
@@ -335,6 +347,9 @@ public class HomeController : Controller
             return View();
         }
     }
+
+
+
     public IActionResult RouteEdit([FromRoute] int id)
     {
         var route = this.routeService.FindRouteByID(id);
@@ -344,11 +359,11 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RouteEdit(int id, [Bind("Order, StopId, Stop, LoopId, Loop")] RouteEditModel route)
+    public async Task<IActionResult> RouteEdit(int id, [Bind("Order, StopId, LoopId")] RouteEditModel route)
     {
         if (ModelState.IsValid)
         {
-            this.routeService.UpdateRouteByID(id, route.Order, route.StopId, route.Stop, route.LoopId, route.Loop);
+            this.routeService.UpdateRouteByID(id, route.Order, route.StopId, route.LoopId);
             return RedirectToAction("RouteView");
         }
         else
@@ -359,24 +374,56 @@ public class HomeController : Controller
 
     public IActionResult RouteCreate()
     {
+        var loops = loopService.GetLoops().Select(l => new SelectListItem
+        {
+            Value = l.Id.ToString(), // Assuming 'Id' is the loop identifier in your loop entity
+            Text = l.Name // And 'Name' is the property you want to display in the dropdown
+        }).ToList();
+
+        ViewBag.AvailableLoops = loops;
+
+        var stops = stopService.GetStops().Select(s => new SelectListItem
+        {
+            Value = s.Id.ToString(), // Assuming 'Id' is the loop identifier in your loop entity
+            Text = s.Name // And 'Name' is the property you want to display in the dropdown
+        }).ToList();
+
+        ViewBag.AvailableStops = stops;
         return View();
     }
 
-
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RouteCreate([Bind("Order, StopId, Stop, LoopId, Loop")] RouteCreateModel route)
+    public async Task<IActionResult> RouteCreate([Bind("Order, StopId, LoopId")] RouteCreateModel route)
     {
         if (ModelState.IsValid)
         {
-            this.routeService.CreateRoute(route.Order, route.StopId, route.Stop, route.LoopId, route.Loop);
+            var routeCount = routeService.GetRoutes().Count;
+            this.routeService.CreateRoute(routeCount + 1, route.StopId, route.LoopId);
             return RedirectToAction("RouteView");
         }
         else
         {
-            return View();
+            // Repopulate the dropdown list in case of validation failure to ensure the dropdown is still populated when the view is returned
+            var loops = loopService.GetLoops().Select(l => new SelectListItem
+            {
+                Value = l.Id.ToString(),
+                Text = l.Name
+            }).ToList();
+
+            ViewBag.AvailableLoops = loops;
+
+            var stops = stopService.GetStops().Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.Name
+            }).ToList();
+
+            ViewBag.AvailableStops = stops;
+            return View(route);
         }
     }
+
 
 
     //Stop

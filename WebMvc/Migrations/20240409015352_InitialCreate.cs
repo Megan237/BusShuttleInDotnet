@@ -67,19 +67,6 @@ namespace WebMvc.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LoopModel",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LoopModel", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Stop",
                 columns: table => new
                 {
@@ -92,21 +79,6 @@ namespace WebMvc.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Stop", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StopModel",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Latitude = table.Column<double>(type: "REAL", nullable: false),
-                    Longitude = table.Column<double>(type: "REAL", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StopModel", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -139,17 +111,17 @@ namespace WebMvc.Migrations
                 {
                     table.PrimaryKey("PK_Route", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Route_LoopModel_LoopId",
+                        name: "FK_Route_Loop_LoopId",
                         column: x => x.LoopId,
-                        principalTable: "LoopModel",
+                        principalTable: "Loop",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Route_StopModel_StopId",
+                        name: "FK_Route_Stop_StopId",
                         column: x => x.StopId,
-                        principalTable: "StopModel",
+                        principalTable: "Stop",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -176,22 +148,16 @@ namespace WebMvc.Migrations
                 name: "Entry");
 
             migrationBuilder.DropTable(
-                name: "Loop");
-
-            migrationBuilder.DropTable(
                 name: "Route");
-
-            migrationBuilder.DropTable(
-                name: "Stop");
 
             migrationBuilder.DropTable(
                 name: "User");
 
             migrationBuilder.DropTable(
-                name: "LoopModel");
+                name: "Loop");
 
             migrationBuilder.DropTable(
-                name: "StopModel");
+                name: "Stop");
         }
     }
 }

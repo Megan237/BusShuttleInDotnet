@@ -8,12 +8,11 @@ namespace WebMvc.Models
     public class RouteViewModel
     {
         public int Id { get; set; }
-
         public int Order { get; set; }
         public int StopId { get; set; }
-        public StopModel Stop { get; set; }
+        public string StopName { get; set; } // Added StopName
         public int LoopId { get; set; }
-        public LoopModel Loop { get; set; }
+        public string LoopName { get; set; } // Added LoopName
 
         public static RouteViewModel FromRoute(RouteModel route)
         {
@@ -22,10 +21,9 @@ namespace WebMvc.Models
                 Id = route.Id,
                 Order = route.Order,
                 StopId = route.StopId,
-                Stop = route.Stop,
+                StopName = route.Stop.Name, // Assuming route.Stop is not null
                 LoopId = route.LoopId,
-                Loop = route.Loop,
-
+                LoopName = route.Loop.Name, // Assuming route.Loop is not null
             };
         }
     }

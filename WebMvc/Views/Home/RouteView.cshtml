@@ -9,6 +9,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Order)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoopName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StopName)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -18,6 +24,12 @@
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Order)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoopName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StopName)
                 </td>
                 <td>
                     <a asp-action="RouteEdit" asp-route-id="@item.Id">Edit</a> | <form asp-action="RouteDelete"

@@ -9,22 +9,18 @@ public class RouteModel
     public int LoopId { get; set; }
     public LoopModel Loop { get; set; }
 
-    public RouteModel(int id, int order, int stopId, StopModel stop, int loopId, LoopModel loop)
+    public RouteModel(int id, int order, int stopId, int loopId)
     {
         Id = id;
         Order = order;
         StopId = stopId;
-        Stop = stop;
         LoopId = loopId;
-        Loop = loop;
     }
 
     public void Update(int order, int stopId, StopModel stop, int loopId, LoopModel loop)
     {
         Order = order;
         StopId = stopId;
-        Stop = stop;
         LoopId = loopId;
-        Loop = loop;
     }
 }

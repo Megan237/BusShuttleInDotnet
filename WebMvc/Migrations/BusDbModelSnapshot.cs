@@ -17,42 +17,6 @@ namespace WebMvc.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
 
-            modelBuilder.Entity("DomainModel.LoopModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LoopModel");
-                });
-
-            modelBuilder.Entity("DomainModel.StopModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("REAL");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("REAL");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StopModel");
-                });
-
             modelBuilder.Entity("WebMvc.Database.Bus", b =>
                 {
                     b.Property<int>("Id")
@@ -195,16 +159,16 @@ namespace WebMvc.Migrations
 
             modelBuilder.Entity("WebMvc.Database.Route", b =>
                 {
-                    b.HasOne("DomainModel.LoopModel", "Loop")
+                    b.HasOne("WebMvc.Database.Loop", "Loop")
                         .WithMany()
                         .HasForeignKey("LoopId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DomainModel.StopModel", "Stop")
+                    b.HasOne("WebMvc.Database.Stop", "Stop")
                         .WithMany()
                         .HasForeignKey("StopId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Loop");
