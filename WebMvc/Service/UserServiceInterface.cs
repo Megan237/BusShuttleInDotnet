@@ -8,4 +8,5 @@ public interface UserServiceInterface
     void CreateUser(string firstname, string lastname, string username, string password);
     bool VerifyUserAsManager(string userName, string password);
     bool VerifyUserAsDriver(string userName, string password);
+    bool VerifyUser(string userName, string password);
 }

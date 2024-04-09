@@ -503,27 +503,39 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Index([Bind("UserName, Password")] UserModel user)
+    public IActionResult Index([Bind("UserName, Password")] UserModel user)
     {
         if (ModelState.IsValid)
         {
             Console.WriteLine("model is valid");
-            if (this.userService.VerifyUserAsManager(user.UserName, user.Password))
+            if (this.userService.VerifyUser(user.UserName, user.Password))
             {
 
-                return RedirectToAction("HomeView");
-            }
-            else
-            {
-                if (this.userService.VerifyUserAsDriver(user.UserName, user.Password))
+
+                if (this.userService.VerifyUserAsManager(user.UserName, user.Password))
                 {
-                    return RedirectToAction("DriverSignOn");
+
+                    return RedirectToAction("HomeView");
                 }
                 else
                 {
-                    return RedirectToAction("DriverWaiting");
+                    if (this.userService.VerifyUserAsDriver(user.UserName, user.Password))
+                    {
+                        return RedirectToAction("DriverSignOn");
+                    }
+                    else
+                    {
+                        return RedirectToAction("DriverWaiting");
+                    }
                 }
+
             }
+
+            else
+            {
+                return View();
+            }
+
         }
         else
         {

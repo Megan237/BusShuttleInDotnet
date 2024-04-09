@@ -53,6 +53,15 @@ namespace WebMvc.Service
             }
             return false;
         }
+        public bool VerifyUser(string userName, string password)
+        {
+            var user = _busDb.User.FirstOrDefault(u => u.UserName == userName && u.Password == password);
+            if (user != null)
+            {
+                return true;
+            }
+            return false;
+        }
         public bool VerifyUserAsDriver(string userName, string password)
         {
             var user = _busDb.User.FirstOrDefault(u => u.UserName == userName && u.Password == password);
