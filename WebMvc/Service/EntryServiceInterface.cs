@@ -8,4 +8,5 @@ public interface EntryServiceInterface
     void CreateEntry(DateTime timeStamp, int boarded, int leftBehind, int busId, int stopId, int driverId, int loopId);
     EntryModel? FindEntryByID(int id);
     void DeleteEntry(int id);
+    List<EntryService.EntryDetailDTO> GetEntryDetails();
 }

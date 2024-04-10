@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DomainModel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using WebMvc.Database;
 namespace WebMvc.Service
@@ -67,6 +68,40 @@ namespace WebMvc.Service
                 _busDb.Entry.Remove(entry);
                 _busDb.SaveChanges();
             }
+        }
+
+        public class EntryDetailDTO
+        {
+            public int Id { get; set; }
+            public DateTime TimeStamp { get; set; }
+            public int Boarded { get; set; }
+            public int LeftBehind { get; set; }
+            public string StopName { get; set; }
+            public string LoopName { get; set; }
+            public string DriverName { get; set; }
+            public int BusNumber { get; set; }
+        }
+
+        public List<EntryDetailDTO> GetEntryDetails()
+        {
+            var entryDetails = _busDb.Entry
+                .Include(r => r.Stop) // Ensure your Route entity has navigation properties to Stop and Loop
+                .Include(r => r.Loop)
+                .Include(r => r.Driver)
+                .Include(r => r.Bus)
+                .Select(r => new EntryDetailDTO
+                {
+                    Id = r.Id,
+                    TimeStamp = r.TimeStamp,
+                    Boarded = r.Boarded,
+                    LeftBehind = r.LeftBehind,
+                    StopName = r.Stop.Name, // Assuming Stop has a Name property
+                    LoopName = r.Loop.Name, // Assuming Loop has a Name property
+                    DriverName = r.Driver.FirstName + " " + r.Driver.LastName,
+                    BusNumber = r.Bus.BusNumber
+                }).ToList();
+
+            return entryDetails;
         }
     }
 }

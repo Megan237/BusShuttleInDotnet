@@ -209,8 +209,24 @@ public class HomeController : Controller
 
     public IActionResult EntryView()
     {
+        var entryDetailsDto = entryService.GetEntryDetails();
 
-        return View(this.entryService.GetEntries().Select(e => EntryViewModel.FromEntry(e)));
+        // Convert RouteDetailDTO list to RouteViewModel list
+        var entryViewModels = entryDetailsDto.Select(dto => new EntryViewModel
+        {
+            Id = dto.Id,
+            TimeStamp = dto.TimeStamp,
+            Boarded = dto.Boarded,
+            LeftBehind = dto.LeftBehind,
+            StopName = dto.StopName,
+            LoopName = dto.LoopName,
+            DriverName = dto.DriverName,
+            BusNumber = dto.BusNumber
+            // Assign other properties as necessary
+        }).ToList();
+
+        // Pass the RouteViewModel list to the view
+        return View(entryViewModels);
 
     }
 
