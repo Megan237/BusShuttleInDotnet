@@ -50,7 +50,8 @@ public class HomeController : Controller
         return View();
 
     }
-    //Driver screens
+
+    // Driver screens
     public IActionResult DriverSignOn()
     {
         var loops = loopService.GetLoops().Select(l => new SelectListItem
@@ -258,11 +259,11 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EntryCreate([Bind("TimeStamp, Boarded, LeftBehind")] EntryCreateModel entry)
+    public async Task<IActionResult> EntryCreate([Bind("TimeStamp, Boarded, LeftBehind, StopId, LoopId, DriverId, BusId")] EntryCreateModel entry)
     {
         if (ModelState.IsValid)
         {
-            this.entryService.CreateEntry(entry.TimeStamp, entry.Boarded, entry.LeftBehind);
+            this.entryService.CreateEntry(entry.TimeStamp, entry.Boarded, entry.LeftBehind, entry.BusId, entry.StopId, entry.DriverId, entry.LoopId);
             return RedirectToAction("EntryView");
         }
         else
