@@ -50,6 +50,25 @@ public class HomeController : Controller
         return View();
 
     }
+    //Driver screens
+    public IActionResult DriverSignOn()
+    {
+        var loops = loopService.GetLoops().Select(l => new SelectListItem
+        {
+            Value = l.Id.ToString(), // Assuming 'Id' is the loop identifier in your loop entity
+            Text = l.Name // And 'Name' is the property you want to display in the dropdown
+        }).ToList();
+        ViewBag.AvailableLoops = loops;
+
+        var busses = busService.GetBusses().Select(b => new SelectListItem
+        {
+            Value = b.Id.ToString(), // Assuming 'Id' is the loop identifier in your loop entity
+            Text = b.BusNumber.ToString() // And 'Name' is the property you want to display in the dropdown
+        }).ToList();
+
+        ViewBag.AvailableBusses = busses;
+        return View();
+    }
 
     //Bus
 
