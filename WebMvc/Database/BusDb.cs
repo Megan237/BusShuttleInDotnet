@@ -34,6 +34,30 @@ public class BusDb : DbContext
             .WithMany()
             .HasForeignKey(r => r.LoopId)
             .OnDelete(DeleteBehavior.Restrict); // Or .Cascade as needed
+
+        modelBuilder.Entity<Entry>()
+        .HasOne(r => r.Loop)
+        .WithMany()
+        .HasForeignKey(r => r.LoopId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Entry>()
+      .HasOne(r => r.Stop)
+      .WithMany()
+      .HasForeignKey(r => r.StopId)
+      .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Entry>()
+      .HasOne(r => r.Driver)
+      .WithMany()
+      .HasForeignKey(r => r.DriverId)
+      .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Entry>()
+      .HasOne(r => r.Bus)
+      .WithMany()
+      .HasForeignKey(r => r.BusId)
+      .OnDelete(DeleteBehavior.Restrict);
     }
 
 }
@@ -55,6 +79,14 @@ public class Entry
     public DateTime TimeStamp { get; set; }
     public int Boarded { get; set; }
     public int LeftBehind { get; set; }
+    public int StopId { get; set; }
+    public Stop Stop { get; set; }
+    public int LoopId { get; set; }
+    public Loop Loop { get; set; }
+    public int DriverId { get; set; }
+    public Driver Driver { get; set; }
+    public int BusId { get; set; }
+    public Bus Bus { get; set; }
 }
 public class Loop
 {
