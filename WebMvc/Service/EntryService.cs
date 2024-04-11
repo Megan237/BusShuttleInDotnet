@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DomainModel;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using WebMvc.Database;
@@ -10,10 +11,12 @@ namespace WebMvc.Service
     public class EntryService : EntryServiceInterface
     {
         private readonly BusDb _busDb;
+        private readonly RouteServiceInterface routeService;
 
-        public EntryService(BusDb busDb)
+        public EntryService(BusDb busDb, RouteServiceInterface routeServiceInterface)
         {
             _busDb = busDb;
+            routeService = routeServiceInterface;
         }
         public List<EntryModel> GetEntries()
         {
@@ -102,6 +105,21 @@ namespace WebMvc.Service
                 }).ToList();
 
             return entryDetails;
+        }
+        public class EntryDetailsWithLoopDTO
+        {
+            public int Id { get; set; }
+            public string StopName { get; set; }
+        }
+        public List<EntryDetailsWithLoopDTO> GetAvailableStops(int loopId)
+        {
+            var routes = routeService.GetRouteDetailsByLoop(loopId)
+            .Select(r => new EntryDetailsWithLoopDTO
+            {
+                Id = r.Id,
+                StopName = r.StopName // Assuming Stop has a Name property
+            }).ToList();
+            return routes;
         }
     }
 }

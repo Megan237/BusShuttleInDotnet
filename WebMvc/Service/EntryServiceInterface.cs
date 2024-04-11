@@ -9,4 +9,5 @@ public interface EntryServiceInterface
     EntryModel? FindEntryByID(int id);
     void DeleteEntry(int id);
     List<EntryService.EntryDetailDTO> GetEntryDetails();
+    List<EntryService.EntryDetailsWithLoopDTO> GetAvailableStops(int loopId);
 }

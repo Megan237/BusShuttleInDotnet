@@ -91,6 +91,15 @@ namespace WebMvc.Service
 
             // Add other properties as needed
         }
+        public class RouteDetailsWithLoopDTO
+        {
+            public int Id { get; set; }
+            public int Order { get; set; }
+            public string StopName { get; set; }
+            public int StopId { get; set; }
+
+            // Add other properties as needed
+        }
 
         public List<RouteDetailDTO> GetRouteDetails()
         {
@@ -105,6 +114,22 @@ namespace WebMvc.Service
                     LoopName = r.Loop.Name // Assuming Loop has a Name property
                 }).ToList();
 
+            return routeDetails;
+        }
+
+        public List<RouteDetailsWithLoopDTO> GetRouteDetailsByLoop(int loopId)
+        {
+            var routeDetails = _busDb.Route
+                .Include(r => r.Stop) // Ensure your Route entity has navigation properties to Stop and Loop
+                .Include(r => r.Loop)
+                .Where(r => r.Loop.Id == loopId) // Filter based on loopId
+                .Select(r => new RouteDetailsWithLoopDTO
+                {
+                    Id = r.Id,
+                    Order = r.Order,
+                    StopName = r.Stop.Name, // Assuming Stop has a Name property
+                    StopId = r.Stop.Id // Assuming Loop has a Name property
+                }).ToList();
             return routeDetails;
         }
     }

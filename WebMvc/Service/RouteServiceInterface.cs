@@ -10,4 +10,5 @@ public interface RouteServiceInterface
     void DeleteRoute(int id);
     void SwapOrders(int currentId, int updatedId);
     List<RouteService.RouteDetailDTO> GetRouteDetails();
+    List<RouteService.RouteDetailsWithLoopDTO> GetRouteDetailsByLoop(int loopId);
 }

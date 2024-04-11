@@ -70,7 +70,44 @@ public class HomeController : Controller
         ViewBag.AvailableBusses = busses;
         return View();
     }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DriverSignOn(DriverSignOnModel driverSignOn)
+    {
+        if (ModelState.IsValid)
+        {
+            return RedirectToAction("DriverScreen", new { busId = driverSignOn.BusId, loopId = driverSignOn.LoopId });
+        }
+        _logger.LogError("Failed entry start validation at {time}.", DateTime.Now);
+        return View(driverSignOn);
+    }
 
+    public IActionResult DriverScreen(int busId, int loopId)
+    {
+        var stops = entryService.GetAvailableStops(loopId).Select(l => new SelectListItem
+        {
+            Value = l.Id.ToString(), // Assuming 'Id' is the loop identifier in your loop entity
+            Text = l.StopName // And 'Name' is the property you want to display in the dropdown
+        }).ToList();
+        ViewBag.AvailableStops = stops;
+        return View(new DriverScreenModel
+        {
+            BusId = busId,
+            LoopId = loopId
+        });
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DriverScreen(DriverScreenModel driverSignOn)
+    {
+        if (ModelState.IsValid)
+        {
+            //needs driver ID
+            _logger.LogInformation(driverSignOn.StopId.ToString());
+            entryService.CreateEntry(DateTime.Now, driverSignOn.Boarded, driverSignOn.LeftBehind, driverSignOn.BusId, 1, 1, driverSignOn.LoopId);
+        }
+        return View(driverSignOn);
+    }
     //Bus
 
     public IActionResult BusView()
@@ -105,7 +142,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> BusEdit(int id, [Bind("BusNumber")] BusEditModel bus)
+    public IActionResult BusEdit(int id, [Bind("BusNumber")] BusEditModel bus)
     {
         if (ModelState.IsValid)
         {
@@ -126,7 +163,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> BusCreate([Bind("BusNumber")] BusCreateModel bus)
+    public IActionResult BusCreate([Bind("BusNumber")] BusCreateModel bus)
     {
         if (ModelState.IsValid)
         {
@@ -170,7 +207,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DriverEdit(int id, [Bind("FirstName, LastName")] DriverEditModel driver)
+    public IActionResult DriverEdit(int id, [Bind("FirstName, LastName")] DriverEditModel driver)
     {
         if (ModelState.IsValid)
         {
@@ -191,7 +228,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DriverCreate([Bind("FirstName, LastName")] DriverCreateModel driver)
+    public IActionResult DriverCreate([Bind("FirstName, LastName")] DriverCreateModel driver)
     {
         if (ModelState.IsValid)
         {
@@ -254,7 +291,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EntryEdit(int id, [Bind("TimeStamp, Boarded, LeftBehind")] EntryEditModel entry)
+    public IActionResult EntryEdit(int id, [Bind("TimeStamp, Boarded, LeftBehind")] EntryEditModel entry)
     {
         if (ModelState.IsValid)
         {
@@ -275,7 +312,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EntryCreate([Bind("TimeStamp, Boarded, LeftBehind, StopId, LoopId, DriverId, BusId")] EntryCreateModel entry)
+    public IActionResult EntryCreate([Bind("TimeStamp, Boarded, LeftBehind, StopId, LoopId, DriverId, BusId")] EntryCreateModel entry)
     {
         if (ModelState.IsValid)
         {
@@ -319,7 +356,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoopEdit(int id, [Bind("Name")] LoopEditModel loop)
+    public IActionResult LoopEdit(int id, [Bind("Name")] LoopEditModel loop)
     {
         if (ModelState.IsValid)
         {
@@ -340,7 +377,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoopCreate([Bind("Name")] LoopCreateModel loop)
+    public IActionResult LoopCreate([Bind("Name")] LoopCreateModel loop)
     {
         if (ModelState.IsValid)
         {
@@ -401,7 +438,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RouteEdit(int id, [Bind("Order, StopId, LoopId")] RouteEditModel route)
+    public IActionResult RouteEdit(int id, [Bind("Order, StopId, LoopId")] RouteEditModel route)
     {
         if (ModelState.IsValid)
         {
@@ -436,7 +473,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RouteCreate([Bind("Order, StopId, LoopId")] RouteCreateModel route)
+    public IActionResult RouteCreate([Bind("Order, StopId, LoopId")] RouteCreateModel route)
     {
         if (ModelState.IsValid)
         {
@@ -500,7 +537,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> StopEdit(int id, [Bind("Name, Latitude, Longitude")] StopEditModel stop)
+    public IActionResult StopEdit(int id, [Bind("Name, Latitude, Longitude")] StopEditModel stop)
     {
         if (ModelState.IsValid)
         {
@@ -521,7 +558,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> StopCreate([Bind("Name, Latitude, Longitude")] StopCreateModel stop)
+    public IActionResult StopCreate([Bind("Name, Latitude, Longitude")] StopCreateModel stop)
     {
         if (ModelState.IsValid)
         {
@@ -589,7 +626,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RegisterView([Bind("FirstName, LastName, UserName, Password")] UserModel user)
+    public IActionResult RegisterView([Bind("FirstName, LastName, UserName, Password")] UserModel user)
     {
         if (ModelState.IsValid)
         {
