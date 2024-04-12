@@ -29,16 +29,16 @@
             <input type="hidden" asp-for="BusId" />
             <div class="form-group">
                 <label asp-for="StopId" class="control-label">Stop</label>
-                <select id="StopId" asp-for="StopId" class="form-select form-select-lg"
+                <select id="stops" asp-for="StopId" class="form-select form-select-lg"
                     asp-items="ViewBag.AvailableStops"></select>
             </div>
-            <div class="form-group">
-                <div class="d-flex p-2">
-                    <button type="button" data-change="boarded" class="dec btn btn-lg btn-primary">-</button>
-                    <label asp-for="Boarded" class="control-label"></label>
-                    <input id="boarded" asp-for="Boarded" class="form-control input-lg" />
-                    <span asp-validation-for="Boarded" class="text-danger"></span>
-                    <button type="button" data-change="boarded" class="inc btn btn-lg btn-primary">+</button>
+                <div class="form-group">
+                        <div class="d-flex p-2">
+                                <button type="button" data-change="boarded" class="dec btn btn-lg btn-primary">-</button>
+                                <label asp-for="Boarded" class="control-label"></label>
+                                <input id="boarded" asp-for="Boarded" class="form-control input-lg" />
+                                <span asp-validation-for="Boarded" class="text-danger"></span>
+                            <button type="button" data-change="boarded" class="inc btn btn-lg btn-primary">+</button>
                 </div>
 
             </div>
@@ -65,4 +65,53 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+                    <script>
+                    $(document).ready(function () {
+                    $(".inc").click(function () {
+                    let valueToChange = $(this).data("change");
+                    let inputToChange = $("#" + valueToChange);
+                    let value = parseInt(inputToChange.val());
+                    inputToChange.val(value + 1)
+                    });
+
+                    $(".dec").click(function () {
+                    let valueToChange = $(this).data("change");
+                    let inputToChange = $("#" + valueToChange);
+                    let value = parseInt(inputToChange.val());
+                    inputToChange.val(value - 1)
+                    });
+
+                    $("form").submit(function (event) {
+                    event.preventDefault();
+                    $.post("DriverScreen", $(this).serialize(), function () {
+                    let stops = $("#stops");
+                    let successModal = $('#successModal');
+
+                    successModal.on('show.bs.modal', function (event) {
+                    let selectedOptionText = stops.find("option:selected").text();
+                    let modal = $(this)
+                    modal.find('.modal-body p').text("Successfully added an entry for " + selectedOptionText + ".");
+                    })
+                    successModal.modal('show')
+
+                    let currentIndex = stops.prop("selectedIndex");
+                    let numOptions = $("select option").length;
+                    let nextIndex = 0
+                    if(currentIndex +1 <= numOptions - 1){
+                        nextIndex = currentIndex + 1;
+                    }
+                    stops.prop("selectedIndex", nextIndex);
+                    $("#boarded").val(0);
+                    $("#leftbehind").val(0);
+
+                    setTimeout(function () {
+                    successModal.modal('hide')
+                    }, 3000);
+                    })
+                    .fail(function (response) {
+                    console.error("Error while submitting entry:", response);
+                    });
+                    });
+                    });
+                    </script>
 }
