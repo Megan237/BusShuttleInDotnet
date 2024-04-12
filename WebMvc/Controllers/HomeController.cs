@@ -104,7 +104,7 @@ public class HomeController : Controller
         {
             //needs driver ID
             _logger.LogInformation(driverSignOn.StopId.ToString());
-            entryService.CreateEntry(DateTime.Now, driverSignOn.Boarded, driverSignOn.LeftBehind, driverSignOn.BusId, 1, 1, driverSignOn.LoopId);
+            entryService.CreateEntry(DateTime.Now, driverSignOn.Boarded, driverSignOn.LeftBehind, driverSignOn.BusId, driverSignOn.StopId, 1, driverSignOn.LoopId);
         }
         return View(driverSignOn);
     }

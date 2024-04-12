@@ -116,7 +116,7 @@ namespace WebMvc.Service
             var routes = routeService.GetRouteDetailsByLoop(loopId)
             .Select(r => new EntryDetailsWithLoopDTO
             {
-                Id = r.Id,
+                Id = r.StopId,
                 StopName = r.StopName // Assuming Stop has a Name property
             }).ToList();
             return routes;
