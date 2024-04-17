@@ -31,6 +31,100 @@ public class HomeController : Controller
     }
 
 
+    public IActionResult Report(string loopId, string busId, string stopId, string driverId, string day)
+    {
+        var loops = loopService.GetLoops().Select(l => new SelectListItem
+        {
+            Value = l.Id.ToString(),
+            Text = l.Name,
+        }).ToList();
+        loops.Insert(0, new SelectListItem
+        {
+            Text = "",
+            Value = ""
+        });
+        ViewBag.AvailableLoops = loops;
+
+        var busses = busService.GetBusses().Select(l => new SelectListItem
+        {
+            Value = l.Id.ToString(),
+            Text = l.BusNumber.ToString()
+        }).ToList();
+        busses.Insert(0, new SelectListItem
+        {
+            Text = "",
+            Value = ""
+        });
+        ViewBag.AvailableBusses = busses;
+
+        var stops = stopService.GetStops().Select(l => new SelectListItem
+        {
+            Value = l.Id.ToString(),
+            Text = l.Name
+        }).ToList();
+        stops.Insert(0, new SelectListItem
+        {
+            Text = "",
+            Value = ""
+        });
+        ViewBag.AvailableStops = stops;
+
+        var drivers = driverService.GetDrivers().Select(l => new SelectListItem
+        {
+            Value = l.Id.ToString(),
+            Text = l.FirstName + " " + l.LastName,
+        }).ToList();
+        drivers.Insert(0, new SelectListItem
+        {
+            Text = "",
+            Value = ""
+        });
+        ViewBag.AvailableDrivers = drivers;
+
+        var entries = entryService.GetEntryDetails();
+
+        if (!string.IsNullOrEmpty(loopId))
+        {
+            entries = entries.Where(e => e.LoopId == int.Parse(loopId)).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(busId))
+        {
+            entries = entries.Where(e => e.BusId == int.Parse(busId)).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(stopId))
+        {
+            entries = entries.Where(e => e.StopId == int.Parse(stopId)).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(driverId))
+        {
+            entries = entries.Where(e => e.DriverId == int.Parse(driverId)).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(day))
+        {
+            entries = entries.Where(e => e.TimeStamp.Date.Equals(DateTime.Parse(day).Date)).ToList();
+        }
+
+        var entryViewModels = entries.Select(dto => new EntryViewModel
+        {
+            Id = dto.Id,
+            TimeStamp = dto.TimeStamp,
+            Boarded = dto.Boarded,
+            LeftBehind = dto.LeftBehind,
+            StopName = dto.StopName,
+            LoopName = dto.LoopName,
+            DriverName = dto.DriverName,
+            BusNumber = dto.BusNumber
+            // Assign other properties as necessary
+        }).ToList();
+
+
+        return View(entryViewModels);
+    }
+
     public IActionResult Index()
     {
 

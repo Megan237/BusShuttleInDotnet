@@ -9,6 +9,7 @@ namespace WebMvc.Models
     {
         public int Id { get; set; }
         public DateTime TimeStamp { get; set; }
+        public DateTime Date { get; set; }
         public int Boarded { get; set; }
         public int LeftBehind { get; set; }
         public int LoopId { get; set; }
@@ -26,6 +27,7 @@ namespace WebMvc.Models
             {
                 Id = entry.Id,
                 TimeStamp = entry.TimeStamp,
+                Date = entry.TimeStamp.Date,
                 Boarded = entry.Boarded,
                 LeftBehind = entry.LeftBehind,
                 LoopId = entry.LoopId,

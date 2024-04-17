@@ -79,9 +79,13 @@ namespace WebMvc.Service
             public DateTime TimeStamp { get; set; }
             public int Boarded { get; set; }
             public int LeftBehind { get; set; }
+            public int StopId { get; set; }
             public string StopName { get; set; }
+            public int LoopId { get; set; }
             public string LoopName { get; set; }
+            public int DriverId { get; set; }
             public string DriverName { get; set; }
+            public int BusId { get; set; }
             public int BusNumber { get; set; }
         }
 
@@ -98,9 +102,13 @@ namespace WebMvc.Service
                     TimeStamp = r.TimeStamp,
                     Boarded = r.Boarded,
                     LeftBehind = r.LeftBehind,
-                    StopName = r.Stop.Name, // Assuming Stop has a Name property
-                    LoopName = r.Loop.Name, // Assuming Loop has a Name property
+                    StopId = r.StopId,
+                    StopName = r.Stop.Name,
+                    LoopId = r.LoopId, // Assuming Stop has a Name property
+                    LoopName = r.Loop.Name,
+                    DriverId = r.DriverId, // Assuming Loop has a Name property
                     DriverName = r.Driver.FirstName + " " + r.Driver.LastName,
+                    BusId = r.BusId,
                     BusNumber = r.Bus.BusNumber
                 }).ToList();
 
