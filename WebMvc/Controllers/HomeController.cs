@@ -316,17 +316,44 @@ public class HomeController : Controller
 
     public IActionResult DriverCreate()
     {
+        var drivers = driverService.GetDrivers().Select(l => new SelectListItem
+        {
+            Value = l.Id.ToString(),
+            Text = l.FirstName + " " + l.LastName
+        }).ToList();
+
+        ViewBag.AvailableDrivers = drivers;
+
+        // Create a set of driver names for fast lookup
+        var driverNames = new HashSet<string>(drivers.Select(d => d.Text));
+
+        var users = userService.GetUsers().Select(u => new SelectListItem
+        {
+            Value = u.Id.ToString(),
+            Text = u.FirstName + " " + u.LastName
+        })
+        .Where(u => u.Value != "1" && !driverNames.Contains(u.Text)) // Exclude users with ID 0 and all matching drivers
+        .ToList();
+
+        ViewBag.AvailableUsers = users;
+
         return View();
     }
 
 
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult DriverCreate([Bind("FirstName, LastName")] DriverCreateModel driver)
+    public IActionResult DriverCreate([Bind("UserId")] DriverCreateModel driver)
     {
+        Console.WriteLine(driver.UserId);
         if (ModelState.IsValid)
         {
-            this.driverService.CreateDriver(driver.FirstName, driver.LastName);
+            Console.WriteLine("in submit form");
+            var FirstName = userService.FindUserByID(driver.UserId).FirstName;
+            var LastName = userService.FindUserByID(driver.UserId).LastName;
+
+            this.driverService.CreateDriver(FirstName, LastName);
             return RedirectToAction("DriverView");
         }
         else
