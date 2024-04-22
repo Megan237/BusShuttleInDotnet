@@ -24,6 +24,25 @@ public class Program
         builder.Services.AddScoped<RouteServiceInterface, RouteService>();
         builder.Services.AddScoped<StopServiceInterface, StopService>();
         builder.Services.AddScoped<UserServiceInterface, UserService>();
+        builder.Services.AddHttpContextAccessor();
+
+        builder.Services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "Cookies";
+                    options.DefaultChallengeScheme = "Cookies";
+                })
+                .AddCookie("Cookies", options =>
+                {
+                    options.LoginPath = "/home/index";
+                    options.LogoutPath = "/home/Logout";
+                    options.ReturnUrlParameter = "returnURL";
+                    options.Cookie.HttpOnly = true;
+                });
+
+        builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Manager"));
+});
 
         var app = builder.Build();
 
@@ -39,8 +58,9 @@ public class Program
         app.UseStaticFiles();
 
         app.UseRouting();
-
+        app.UseAuthentication();
         app.UseAuthorization();
+
 
         app.MapControllerRoute(
             name: "default",

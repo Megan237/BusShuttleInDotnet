@@ -62,7 +62,7 @@ namespace WebMvc.Service
             }
             return false;
         }
-        public bool VerifyUserAsDriver(string userName, string password)
+        public Driver VerifyUserAsDriver(string userName, string password)
         {
             var user = _busDb.User.FirstOrDefault(u => u.UserName == userName && u.Password == password);
             if (user != null && user.Id != 1)
@@ -70,10 +70,10 @@ namespace WebMvc.Service
                 var driver = _busDb.Driver.FirstOrDefault(d => d.FirstName == user.FirstName && d.LastName == user.LastName);
                 if (driver != null)
                 {
-                    return true;
+                    return driver;
                 }
             }
-            return false;
+            return null;
         }
     }
 }

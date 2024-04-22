@@ -62,5 +62,37 @@ namespace WebMvc.Service
                 _busDb.SaveChanges();
             }
         }
+
+        public int GetDriverByName(string fullName)
+        {
+            string[] nameParts = fullName.Split(' ');
+
+            if (nameParts.Length >= 2)
+            {
+                var fName = nameParts[0];
+                var lName = nameParts[1];
+
+                Console.WriteLine($"First Name: {fName}");
+                Console.WriteLine($"Last Name: {lName}");
+
+                var driver = _busDb.Driver.FirstOrDefault(d => d.FirstName == fName && d.LastName == lName);
+                if (driver != null)
+                {
+                    Console.WriteLine($"Driver ID: {driver.Id}");
+                    return driver.Id;
+                }
+                else
+                {
+                    Console.WriteLine("Driver not found.");
+                    return 0;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid name format.");
+                return 0; // Handle error or invalid name format
+            }
+        }
+
     }
 }

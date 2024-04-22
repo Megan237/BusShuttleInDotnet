@@ -4,6 +4,10 @@ using WebMvc.Models;
 using DomainModel;
 using WebMvc.Service;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace WebMvc.Controllers;
 
@@ -30,7 +34,7 @@ public class HomeController : Controller
         this.userService = userService;
     }
 
-
+    [Authorize(Roles = "Manager")]
     public IActionResult Report(string loopId, string busId, string stopId, string driverId, string day)
     {
         var loops = loopService.GetLoops().Select(l => new SelectListItem
@@ -131,7 +135,7 @@ public class HomeController : Controller
         return View();
 
     }
-
+    [Authorize(Roles = "Manager")]
     public IActionResult HomeView()
     {
 
@@ -146,6 +150,7 @@ public class HomeController : Controller
     }
 
     // Driver screens
+    [Authorize(Roles = "Driver")]
     public IActionResult DriverSignOn()
     {
         var loops = loopService.GetLoops().Select(l => new SelectListItem
@@ -166,6 +171,7 @@ public class HomeController : Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Driver")]
     public IActionResult DriverSignOn(DriverSignOnModel driverSignOn)
     {
         if (ModelState.IsValid)
@@ -175,7 +181,7 @@ public class HomeController : Controller
         _logger.LogError("Failed entry start validation at {time}.", DateTime.Now);
         return View(driverSignOn);
     }
-
+    [Authorize(Roles = "Driver")]
     public IActionResult DriverScreen(int busId, int loopId)
     {
         var stops = entryService.GetAvailableStops(loopId).Select(l => new SelectListItem
@@ -192,18 +198,42 @@ public class HomeController : Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Driver")]
     public IActionResult DriverScreen(DriverScreenModel driverSignOn)
     {
         if (ModelState.IsValid)
         {
-            //needs driver ID
-            _logger.LogInformation(driverSignOn.StopId.ToString());
-            entryService.CreateEntry(DateTime.Now, driverSignOn.Boarded, driverSignOn.LeftBehind, driverSignOn.BusId, driverSignOn.StopId, 1, driverSignOn.LoopId);
+            // Check if user is authenticated and retrieve the name
+            if (User.Identity.IsAuthenticated)
+            {
+                var fullName = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+                if (fullName != null)
+                {
+                    // Using the full name to get driver details
+                    var driver = driverService.GetDriverByName(fullName);
+                    _logger.LogInformation(driver.ToString());
+
+                    entryService.CreateEntry(DateTime.Now, driverSignOn.Boarded, driverSignOn.LeftBehind, driverSignOn.BusId, driverSignOn.StopId, driver, driverSignOn.LoopId);
+                    _logger.LogInformation("Entry Created at " + driverSignOn.TimeStamp);
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to retrieve driver's name from claims.");
+                    // Handle error: the name claim is not found or the user might not be a driver
+                }
+            }
+            else
+            {
+                _logger.LogWarning("User is not authenticated.");
+                // Handle error: the user is not authenticated
+            }
         }
+
         return View(driverSignOn);
     }
     //Bus
-
+    [Authorize(Roles = "Manager")]
     public IActionResult BusView()
     {
 
@@ -213,11 +243,13 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult BusDelete(int id)
     {
         if (ModelState.IsValid)
         {
             this.busService.DeleteBus(id);
+            _logger.LogInformation("Bus with Id " + id + " removed");
             return RedirectToAction("BusView");
         }
         else
@@ -226,21 +258,24 @@ public class HomeController : Controller
         }
     }
 
-    //This name needs to be same as View
+    [Authorize(Roles = "Manager")]
     public IActionResult BusEdit([FromRoute] int id)
     {
         var bus = this.busService.FindBusByID(id);
         var busEditModel = BusEditModel.FromBus(bus);
+
         return View(busEditModel);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult BusEdit(int id, [Bind("BusNumber")] BusEditModel bus)
     {
         if (ModelState.IsValid)
         {
             this.busService.UpdateBusByID(id, bus.BusNumber);
+            _logger.LogInformation("Bus with id" + id + "was updated to " + bus);
             return RedirectToAction("BusView");
         }
         else
@@ -248,7 +283,7 @@ public class HomeController : Controller
             return View(bus);
         }
     }
-
+    [Authorize(Roles = "Manager")]
     public IActionResult BusCreate()
     {
         return View();
@@ -257,11 +292,13 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult BusCreate([Bind("BusNumber")] BusCreateModel bus)
     {
         if (ModelState.IsValid)
         {
             this.busService.CreateBus(bus.BusNumber);
+            _logger.LogInformation("Bus was created with this bus number" + bus.BusNumber);
             return RedirectToAction("BusView");
         }
         else
@@ -272,6 +309,7 @@ public class HomeController : Controller
 
 
     //Driver
+    [Authorize(Roles = "Manager")]
     public IActionResult DriverView()
     {
 
@@ -280,11 +318,13 @@ public class HomeController : Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult DriverDelete(int id)
     {
         if (ModelState.IsValid)
         {
             this.driverService.DeleteDriver(id);
+            _logger.LogInformation("Driver with id " + id + "was deleted");
             return RedirectToAction("DriverView");
         }
         else
@@ -292,6 +332,7 @@ public class HomeController : Controller
             return View();
         }
     }
+    [Authorize(Roles = "Manager")]
     public IActionResult DriverEdit([FromRoute] int id)
     {
         var driver = this.driverService.FindDriverByID(id);
@@ -301,11 +342,13 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult DriverEdit(int id, [Bind("FirstName, LastName")] DriverEditModel driver)
     {
         if (ModelState.IsValid)
         {
             this.driverService.UpdateDriverByID(id, driver.FirstName, driver.LastName);
+            _logger.LogInformation("Driver updated to " + driver);
             return RedirectToAction("DriverView");
         }
         else
@@ -313,7 +356,7 @@ public class HomeController : Controller
             return View(driver);
         }
     }
-
+    [Authorize(Roles = "Manager")]
     public IActionResult DriverCreate()
     {
         var drivers = driverService.GetDrivers().Select(l => new SelectListItem
@@ -344,16 +387,17 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult DriverCreate([Bind("UserId")] DriverCreateModel driver)
     {
-        Console.WriteLine(driver.UserId);
         if (ModelState.IsValid)
         {
-            Console.WriteLine("in submit form");
             var FirstName = userService.FindUserByID(driver.UserId).FirstName;
             var LastName = userService.FindUserByID(driver.UserId).LastName;
 
             this.driverService.CreateDriver(FirstName, LastName);
+            _logger.LogInformation("New driver added as " + driver);
+
             return RedirectToAction("DriverView");
         }
         else
@@ -364,7 +408,7 @@ public class HomeController : Controller
 
 
     //Entry
-
+    [Authorize(Roles = "Manager")]
     public IActionResult EntryView()
     {
         var entryDetailsDto = entryService.GetEntryDetails();
@@ -390,11 +434,13 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult EntryDelete(int id)
     {
         if (ModelState.IsValid)
         {
             this.entryService.DeleteEntry(id);
+            _logger.LogInformation("Entry with Id " + id + " was removed");
             return RedirectToAction("EntryView");
         }
         else
@@ -402,7 +448,7 @@ public class HomeController : Controller
             return View();
         }
     }
-
+    [Authorize(Roles = "Manager")]
     public IActionResult EntryEdit([FromRoute] int id)
     {
         var entry = this.entryService.FindEntryByID(id);
@@ -412,11 +458,13 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult EntryEdit(int id, [Bind("TimeStamp, Boarded, LeftBehind")] EntryEditModel entry)
     {
         if (ModelState.IsValid)
         {
             this.entryService.UpdateEntryByID(id, entry.TimeStamp, entry.Boarded, entry.LeftBehind);
+            _logger.LogInformation("Entry updated to " + entry);
             return RedirectToAction("EntryView");
         }
         else
@@ -438,6 +486,7 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.entryService.CreateEntry(entry.TimeStamp, entry.Boarded, entry.LeftBehind, entry.BusId, entry.StopId, entry.DriverId, entry.LoopId);
+            _logger.LogInformation("Entry created with information " + entry);
             return RedirectToAction("EntryView");
         }
         else
@@ -447,6 +496,7 @@ public class HomeController : Controller
     }
 
     //Loop
+    [Authorize(Roles = "Manager")]
     public IActionResult LoopView()
     {
 
@@ -456,11 +506,13 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult LoopDelete(int id)
     {
         if (ModelState.IsValid)
         {
             this.loopService.DeleteLoop(id);
+            _logger.LogInformation("Loop with id " + id + "was removed");
             return RedirectToAction("LoopView");
         }
         else
@@ -468,6 +520,7 @@ public class HomeController : Controller
             return View();
         }
     }
+    [Authorize(Roles = "Manager")]
     public IActionResult LoopEdit([FromRoute] int id)
     {
         var loop = this.loopService.FindLoopByID(id);
@@ -477,11 +530,13 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult LoopEdit(int id, [Bind("Name")] LoopEditModel loop)
     {
         if (ModelState.IsValid)
         {
             this.loopService.UpdateLoopByID(id, loop.Name);
+            _logger.LogInformation("Loop updated with this information " + loop.ToString());
             return RedirectToAction("LoopView");
         }
         else
@@ -490,6 +545,7 @@ public class HomeController : Controller
         }
     }
 
+    [Authorize(Roles = "Manager")]
     public IActionResult LoopCreate()
     {
         return View();
@@ -498,6 +554,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult LoopCreate([Bind("Name")] LoopCreateModel loop)
     {
         if (ModelState.IsValid)
@@ -514,7 +571,7 @@ public class HomeController : Controller
 
 
     //Route
-
+    [Authorize(Roles = "Manager")]
     public IActionResult RouteView()
     {
         var routeDetailsDto = routeService.GetRouteDetails();
@@ -535,6 +592,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult RouteDelete(int id)
     {
         if (ModelState.IsValid)
@@ -549,7 +607,7 @@ public class HomeController : Controller
     }
 
 
-
+    [Authorize(Roles = "Manager")]
     public IActionResult RouteEdit([FromRoute] int id)
     {
         var route = this.routeService.FindRouteByID(id);
@@ -559,6 +617,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult RouteEdit(int id, [Bind("Order, StopId, LoopId")] RouteEditModel route)
     {
         if (ModelState.IsValid)
@@ -571,7 +630,7 @@ public class HomeController : Controller
             return View(route);
         }
     }
-
+    [Authorize(Roles = "Manager")]
     public IActionResult RouteCreate()
     {
         var loops = loopService.GetLoops().Select(l => new SelectListItem
@@ -594,6 +653,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult RouteCreate([Bind("Order, StopId, LoopId")] RouteCreateModel route)
     {
         if (ModelState.IsValid)
@@ -627,7 +687,7 @@ public class HomeController : Controller
 
 
     //Stop
-
+    [Authorize(Roles = "Manager")]
     public IActionResult StopView()
     {
 
@@ -637,6 +697,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult StopDelete(int id)
     {
         if (ModelState.IsValid)
@@ -649,6 +710,7 @@ public class HomeController : Controller
             return View();
         }
     }
+    [Authorize(Roles = "Manager")]
     public IActionResult StopEdit([FromRoute] int id)
     {
         var stop = this.stopService.FindStopByID(id);
@@ -658,6 +720,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult StopEdit(int id, [Bind("Name, Latitude, Longitude")] StopEditModel stop)
     {
         if (ModelState.IsValid)
@@ -670,7 +733,7 @@ public class HomeController : Controller
             return View(stop);
         }
     }
-
+    [Authorize(Roles = "Manager")]
     public IActionResult StopCreate()
     {
         return View();
@@ -679,6 +742,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Manager")]
     public IActionResult StopCreate([Bind("Name, Latitude, Longitude")] StopCreateModel stop)
     {
         if (ModelState.IsValid)
@@ -701,41 +765,62 @@ public class HomeController : Controller
     {
         if (ModelState.IsValid)
         {
-            Console.WriteLine("model is valid");
-            if (this.userService.VerifyUser(user.UserName, user.Password))
+            if (userService.VerifyUser(user.UserName, user.Password))
             {
+                var userRole = string.Empty;
+                var fullName = string.Empty;
+                var claims = new List<Claim>();
 
-
-                if (this.userService.VerifyUserAsManager(user.UserName, user.Password))
+                if (userService.VerifyUserAsManager(user.UserName, user.Password))
                 {
-
-                    return RedirectToAction("HomeView");
+                    var manager = userService.FindUserByID(1); // Ensure this is the correct user
+                    fullName = manager.FirstName + " " + manager.LastName;
+                    userRole = "Manager";
                 }
                 else
                 {
-                    if (this.userService.VerifyUserAsDriver(user.UserName, user.Password))
+                    var driver = userService.VerifyUserAsDriver(user.UserName, user.Password);
+                    if (driver != null)
                     {
-                        return RedirectToAction("DriverSignOn");
-                    }
-                    else
-                    {
-                        return RedirectToAction("DriverWaiting");
+                        fullName = driver.FirstName + " " + driver.LastName;
+                        userRole = "Driver";
                     }
                 }
 
-            }
+                claims.Add(new Claim(ClaimTypes.Name, fullName));
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
 
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+                HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                // Redirect based on role
+                switch (userRole)
+                {
+                    case "Manager":
+                        return RedirectToAction("HomeView");
+                    case "Driver":
+                        return RedirectToAction("DriverSignOn");
+                    default:
+                        return RedirectToAction("DriverWaiting");
+                }
+            }
             else
             {
-                return View();
+                ModelState.AddModelError("", "Invalid username or password");
+                return View(user);
             }
-
         }
         else
         {
-            return View();
+            return View(user);
         }
     }
+
 
     //Register
 

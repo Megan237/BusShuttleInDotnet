@@ -8,4 +8,5 @@ public interface DriverServiceInterface
     void CreateDriver(string firstname, string lastname);
     DriverModel? FindDriverByID(int id);
     void DeleteDriver(int id);
+    int GetDriverByName(string name);
 }
