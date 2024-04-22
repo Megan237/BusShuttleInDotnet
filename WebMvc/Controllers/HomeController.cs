@@ -32,11 +32,13 @@ public class HomeController : Controller
         this.routeService = routeService;
         this.stopService = stopService;
         this.userService = userService;
+        _logger.LogInformation("HomeController initialized with all dependencies.");
     }
 
     [Authorize(Roles = "Manager")]
     public IActionResult Report(string loopId, string busId, string stopId, string driverId, string day)
     {
+        _logger.LogDebug("Starting Report generation.");
         var loops = loopService.GetLoops().Select(l => new SelectListItem
         {
             Value = l.Id.ToString(),
@@ -124,27 +126,27 @@ public class HomeController : Controller
             BusNumber = dto.BusNumber
             // Assign other properties as necessary
         }).ToList();
-
+        _logger.LogInformation("Report generated successfully.");
 
         return View(entryViewModels);
     }
 
     public IActionResult Index()
     {
-
+        _logger.LogInformation("Accessed Index page.");
         return View();
 
     }
     [Authorize(Roles = "Manager")]
     public IActionResult HomeView()
     {
-
+        _logger.LogInformation("Accessed HomeView for Managers.");
         return View();
 
     }
     public IActionResult DriverWaiting()
     {
-
+        _logger.LogInformation("Accessed DriverWaiting page.");
         return View();
 
     }
@@ -167,6 +169,7 @@ public class HomeController : Controller
         }).ToList();
 
         ViewBag.AvailableBusses = busses;
+        _logger.LogInformation("Accessed DriverSignOn page.");
         return View();
     }
     [HttpPost]
@@ -176,6 +179,7 @@ public class HomeController : Controller
     {
         if (ModelState.IsValid)
         {
+            _logger.LogInformation("Driver signed on successfully. Redirecting to DriverScreen.");
             return RedirectToAction("DriverScreen", new { busId = driverSignOn.BusId, loopId = driverSignOn.LoopId });
         }
         _logger.LogError("Failed entry start validation at {time}.", DateTime.Now);
@@ -190,6 +194,7 @@ public class HomeController : Controller
             Text = l.StopName // And 'Name' is the property you want to display in the dropdown
         }).ToList();
         ViewBag.AvailableStops = stops;
+        _logger.LogInformation("DriverScreen displayed with bus ID {BusId} and loop ID {LoopId}.", busId, loopId);
         return View(new DriverScreenModel
         {
             BusId = busId,
@@ -201,32 +206,32 @@ public class HomeController : Controller
     [Authorize(Roles = "Driver")]
     public IActionResult DriverScreen(DriverScreenModel driverSignOn)
     {
+        _logger.LogInformation("Processing DriverScreen with model data.");
         if (ModelState.IsValid)
         {
-            // Check if user is authenticated and retrieve the name
+            _logger.LogDebug("Model state is valid. Proceeding with user authentication check.");
             if (User.Identity.IsAuthenticated)
             {
+                _logger.LogDebug("User is authenticated. Retrieving user's full name from claims.");
                 var fullName = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
                 if (fullName != null)
                 {
-                    // Using the full name to get driver details
+                    _logger.LogInformation("Successfully retrieved full name: {FullName}. Fetching driver details.", fullName);
                     var driver = driverService.GetDriverByName(fullName);
                     _logger.LogInformation(driver.ToString());
 
                     entryService.CreateEntry(DateTime.Now, driverSignOn.Boarded, driverSignOn.LeftBehind, driverSignOn.BusId, driverSignOn.StopId, driver, driverSignOn.LoopId);
-                    _logger.LogInformation("Entry Created at " + driverSignOn.TimeStamp);
+                    _logger.LogInformation("Entry created successfully at {TimeStamp}.", DateTime.Now);
                 }
                 else
                 {
                     _logger.LogWarning("Failed to retrieve driver's name from claims.");
-                    // Handle error: the name claim is not found or the user might not be a driver
                 }
             }
             else
             {
                 _logger.LogWarning("User is not authenticated.");
-                // Handle error: the user is not authenticated
             }
         }
 
@@ -236,6 +241,7 @@ public class HomeController : Controller
     [Authorize(Roles = "Manager")]
     public IActionResult BusView()
     {
+        _logger.LogDebug("Fetching bus list for view.");
 
         return View(this.busService.GetBusses().Select(b => BusViewModel.FromBus(b)));
 
@@ -249,11 +255,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.busService.DeleteBus(id);
-            _logger.LogInformation("Bus with Id " + id + " removed");
+            _logger.LogInformation("Bus with Id {BusId} removed.", id);
             return RedirectToAction("BusView");
         }
         else
         {
+            _logger.LogWarning("Model state is invalid when attempting to delete bus with Id {BusId}.", id);
             return View();
         }
     }
@@ -261,6 +268,7 @@ public class HomeController : Controller
     [Authorize(Roles = "Manager")]
     public IActionResult BusEdit([FromRoute] int id)
     {
+        _logger.LogDebug("Editing bus with Id {BusId}.", id);
         var bus = this.busService.FindBusByID(id);
         var busEditModel = BusEditModel.FromBus(bus);
 
@@ -275,11 +283,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.busService.UpdateBusByID(id, bus.BusNumber);
-            _logger.LogInformation("Bus with id" + id + "was updated to " + bus);
+            _logger.LogInformation("Bus with id {BusId} was updated to {BusDetails}.", id, bus);
             return RedirectToAction("BusView");
         }
         else
         {
+            _logger.LogWarning("Model state is invalid when attempting to update bus with Id {BusId}.", id);
             return View(bus);
         }
     }
@@ -298,11 +307,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.busService.CreateBus(bus.BusNumber);
-            _logger.LogInformation("Bus was created with this bus number" + bus.BusNumber);
+            _logger.LogInformation("New bus was created with Bus Number {BusNumber}.", bus.BusNumber);
             return RedirectToAction("BusView");
         }
         else
         {
+            _logger.LogWarning("Model state is invalid when attempting to create a new bus.");
             return View();
         }
     }
@@ -312,6 +322,7 @@ public class HomeController : Controller
     [Authorize(Roles = "Manager")]
     public IActionResult DriverView()
     {
+        _logger.LogDebug("Fetching driver list for view.");
 
         return View(this.driverService.GetDrivers().Select(d => DriverViewModel.FromDriver(d)));
 
@@ -324,17 +335,19 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.driverService.DeleteDriver(id);
-            _logger.LogInformation("Driver with id " + id + "was deleted");
+            _logger.LogInformation("Driver with id {DriverId} was deleted.", id);
             return RedirectToAction("DriverView");
         }
         else
         {
+            _logger.LogWarning("Model state is invalid when attempting to delete driver with id {DriverId}.", id);
             return View();
         }
     }
     [Authorize(Roles = "Manager")]
     public IActionResult DriverEdit([FromRoute] int id)
     {
+        _logger.LogDebug("Editing driver with Id {DriverId}.", id);
         var driver = this.driverService.FindDriverByID(id);
         var driverEditModel = DriverEditModel.FromDriver(driver);
         return View(driverEditModel);
@@ -348,11 +361,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.driverService.UpdateDriverByID(id, driver.FirstName, driver.LastName);
-            _logger.LogInformation("Driver updated to " + driver);
+            _logger.LogInformation("Driver with id {DriverId} updated to FirstName: {FirstName}, LastName: {LastName}", id, driver.FirstName, driver.LastName);
             return RedirectToAction("DriverView");
         }
         else
         {
+            _logger.LogWarning("Model state is invalid when attempting to update driver with Id {DriverId}.", id);
             return View(driver);
         }
     }
@@ -396,12 +410,13 @@ public class HomeController : Controller
             var LastName = userService.FindUserByID(driver.UserId).LastName;
 
             this.driverService.CreateDriver(FirstName, LastName);
-            _logger.LogInformation("New driver added as " + driver);
+            _logger.LogInformation("New driver added with FirstName: {FirstName}, LastName: {LastName}", FirstName, LastName);
 
             return RedirectToAction("DriverView");
         }
         else
         {
+            _logger.LogWarning("Model state is invalid when attempting to create a new driver.");
             return View();
         }
     }
@@ -411,6 +426,7 @@ public class HomeController : Controller
     [Authorize(Roles = "Manager")]
     public IActionResult EntryView()
     {
+        _logger.LogDebug("Fetching entry details for view.");
         var entryDetailsDto = entryService.GetEntryDetails();
 
         // Convert RouteDetailDTO list to RouteViewModel list
@@ -424,10 +440,8 @@ public class HomeController : Controller
             LoopName = dto.LoopName,
             DriverName = dto.DriverName,
             BusNumber = dto.BusNumber
-            // Assign other properties as necessary
         }).ToList();
-
-        // Pass the RouteViewModel list to the view
+        _logger.LogInformation("Fetched {Count} entries for display.", entryViewModels.Count);
         return View(entryViewModels);
 
     }
@@ -440,57 +454,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.entryService.DeleteEntry(id);
-            _logger.LogInformation("Entry with Id " + id + " was removed");
+            _logger.LogInformation("Entry with Id {EntryId} was removed", id);
             return RedirectToAction("EntryView");
         }
         else
         {
-            return View();
-        }
-    }
-    [Authorize(Roles = "Manager")]
-    public IActionResult EntryEdit([FromRoute] int id)
-    {
-        var entry = this.entryService.FindEntryByID(id);
-        var entryEditModel = EntryEditModel.FromEntry(entry);
-        return View(entryEditModel);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Manager")]
-    public IActionResult EntryEdit(int id, [Bind("TimeStamp, Boarded, LeftBehind")] EntryEditModel entry)
-    {
-        if (ModelState.IsValid)
-        {
-            this.entryService.UpdateEntryByID(id, entry.TimeStamp, entry.Boarded, entry.LeftBehind);
-            _logger.LogInformation("Entry updated to " + entry);
-            return RedirectToAction("EntryView");
-        }
-        else
-        {
-            return View(entry);
-        }
-    }
-
-    public IActionResult EntryCreate()
-    {
-        return View();
-    }
-
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult EntryCreate([Bind("TimeStamp, Boarded, LeftBehind, StopId, LoopId, DriverId, BusId")] EntryCreateModel entry)
-    {
-        if (ModelState.IsValid)
-        {
-            this.entryService.CreateEntry(entry.TimeStamp, entry.Boarded, entry.LeftBehind, entry.BusId, entry.StopId, entry.DriverId, entry.LoopId);
-            _logger.LogInformation("Entry created with information " + entry);
-            return RedirectToAction("EntryView");
-        }
-        else
-        {
+            _logger.LogWarning("Attempted to delete entry with Id {EntryId}, but model state is invalid.", id);
             return View();
         }
     }
@@ -499,7 +468,7 @@ public class HomeController : Controller
     [Authorize(Roles = "Manager")]
     public IActionResult LoopView()
     {
-
+        _logger.LogDebug("Fetching loop details for view.");
         return View(this.loopService.GetLoops().Select(l => LoopViewModel.FromLoop(l)));
 
     }
@@ -512,11 +481,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.loopService.DeleteLoop(id);
-            _logger.LogInformation("Loop with id " + id + "was removed");
+            _logger.LogInformation("Loop with id {LoopId} was removed", id);
             return RedirectToAction("LoopView");
         }
         else
         {
+            _logger.LogWarning("Attempted to delete loop with id {LoopId}, but model state is invalid.", id);
             return View();
         }
     }
@@ -536,11 +506,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.loopService.UpdateLoopByID(id, loop.Name);
-            _logger.LogInformation("Loop updated with this information " + loop.ToString());
+            _logger.LogInformation("Loop with id {LoopId} was updated with new name: {Name}", id, loop.Name);
             return RedirectToAction("LoopView");
         }
         else
         {
+            _logger.LogWarning("Attempted to update loop with id {LoopId}, but model state is invalid.", id);
             return View(loop);
         }
     }
@@ -560,10 +531,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.loopService.CreateLoop(loop.Name);
+            _logger.LogInformation("New loop was created with name: {Name}", loop.Name);
             return RedirectToAction("LoopView");
         }
         else
         {
+            _logger.LogWarning("Failed to create new loop because model state is invalid.");
             return View();
         }
     }
@@ -574,6 +547,7 @@ public class HomeController : Controller
     [Authorize(Roles = "Manager")]
     public IActionResult RouteView()
     {
+        _logger.LogDebug("Fetching route details for view.");
         var routeDetailsDto = routeService.GetRouteDetails();
 
         // Convert RouteDetailDTO list to RouteViewModel list
@@ -585,7 +559,7 @@ public class HomeController : Controller
             LoopName = dto.LoopName,
             // Assign other properties as necessary
         }).ToList();
-
+        _logger.LogInformation("Fetched {Count} routes for display.", routeViewModels.Count);
         // Pass the RouteViewModel list to the view
         return View(routeViewModels);
     }
@@ -598,10 +572,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.routeService.DeleteRoute(id);
+            _logger.LogInformation("Route with id {RouteId} was deleted.", id);
             return RedirectToAction("RouteView");
         }
         else
         {
+            _logger.LogWarning("Failed to delete route with id {RouteId}; model state invalid.", id);
             return View();
         }
     }
@@ -623,10 +599,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.routeService.UpdateRouteByID(id, route.Order, route.StopId, route.LoopId);
+            _logger.LogInformation("Route with id {RouteId} was updated.", id);
             return RedirectToAction("RouteView");
         }
         else
         {
+            _logger.LogWarning("Failed to update route with id {RouteId}; model state invalid.", id);
             return View(route);
         }
     }
@@ -660,10 +638,12 @@ public class HomeController : Controller
         {
             var routeCount = routeService.GetRoutes().Count;
             this.routeService.CreateRoute(routeCount + 1, route.StopId, route.LoopId);
+
             return RedirectToAction("RouteView");
         }
         else
         {
+            _logger.LogWarning("Failed to create route; model state invalid. Route details: {Details}", route);
             // Repopulate the dropdown list in case of validation failure to ensure the dropdown is still populated when the view is returned
             var loops = loopService.GetLoops().Select(l => new SelectListItem
             {
@@ -690,7 +670,7 @@ public class HomeController : Controller
     [Authorize(Roles = "Manager")]
     public IActionResult StopView()
     {
-
+        _logger.LogDebug("Fetching all stops for viewing.");
         return View(this.stopService.GetStops().Select(s => StopViewModel.FromStop(s)));
 
     }
@@ -703,10 +683,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.stopService.DeleteStop(id);
+            _logger.LogInformation("Stop with id {StopId} deleted successfully.", id);
             return RedirectToAction("StopView");
         }
         else
         {
+            _logger.LogWarning("Failed to delete stop with id {StopId} due to invalid model state.", id);
             return View();
         }
     }
@@ -726,16 +708,19 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.stopService.UpdateStopByID(id, stop.Name, stop.Latitude, stop.Longitude);
+            _logger.LogInformation("Stop with id {StopId} updated successfully.", id);
             return RedirectToAction("StopView");
         }
         else
         {
+            _logger.LogWarning("Failed to update stop with id {StopId} due to invalid model state.", id);
             return View(stop);
         }
     }
     [Authorize(Roles = "Manager")]
     public IActionResult StopCreate()
     {
+        _logger.LogDebug("Navigated to Stop creation page.");
         return View();
     }
 
@@ -748,10 +733,12 @@ public class HomeController : Controller
         if (ModelState.IsValid)
         {
             this.stopService.CreateStop(stop.Name, stop.Latitude, stop.Longitude);
+            _logger.LogInformation("New stop created: {Name}", stop.Name);
             return RedirectToAction("StopView");
         }
         else
         {
+            _logger.LogWarning("Failed to create new stop due to invalid model state.");
             return View();
         }
     }
@@ -763,6 +750,7 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Index([Bind("UserName, Password")] UserModel user)
     {
+        _logger.LogDebug("Attempting to log in user with username: {Username}", user.UserName);
         if (ModelState.IsValid)
         {
             if (userService.VerifyUser(user.UserName, user.Password))
@@ -776,6 +764,7 @@ public class HomeController : Controller
                     var manager = userService.FindUserByID(1); // Ensure this is the correct user
                     fullName = manager.FirstName + " " + manager.LastName;
                     userRole = "Manager";
+                    _logger.LogInformation("Manager {FullName} logged in successfully.", fullName);
                 }
                 else
                 {
@@ -784,6 +773,7 @@ public class HomeController : Controller
                     {
                         fullName = driver.FirstName + " " + driver.LastName;
                         userRole = "Driver";
+                        _logger.LogInformation("Driver {FullName} logged in successfully.", fullName);
                     }
                 }
 
@@ -812,11 +802,13 @@ public class HomeController : Controller
             else
             {
                 ModelState.AddModelError("", "Invalid username or password");
+                _logger.LogWarning("Login attempt failed for user {Username}.", user.UserName);
                 return View(user);
             }
         }
         else
         {
+            _logger.LogWarning("Login attempt with invalid model state for user {Username}.", user.UserName);
             return View(user);
         }
     }
@@ -834,13 +826,16 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult RegisterView([Bind("FirstName, LastName, UserName, Password")] UserModel user)
     {
+        _logger.LogDebug("Attempting to register a new user with username: {Username}", user.UserName);
         if (ModelState.IsValid)
         {
             this.userService.CreateUser(user.FirstName, user.LastName, user.UserName, user.Password);
+            _logger.LogInformation("New user {FullName} registered successfully.", user.FirstName + " " + user.LastName);
             return RedirectToAction("Index");
         }
         else
         {
+            _logger.LogWarning("Registration attempt failed due to invalid model state for user {Username}.", user.UserName);
             return View();
         }
     }

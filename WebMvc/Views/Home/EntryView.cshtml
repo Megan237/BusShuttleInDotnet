@@ -57,8 +57,7 @@
                     @Html.DisplayFor(modelItem => item.BusNumber)
                 </td>
                 <td>
-                    <a asp-action="EntryEdit" asp-route-id="@item.Id">Edit</a> | <form asp-action="EntryDelete"
-                        asp-route-id="@item.Id" method="post" style="display:inline">
+                    <form asp-action="EntryDelete" asp-route-id="@item.Id" method="post" style="display:inline">
                         <button type="submit" class="btn btn-danger"
                             onclick="return confirm('Are you sure you want to delete this?');">Delete</button>
                     </form>
@@ -68,4 +67,3 @@
         }
     </tbody>
 </table>
-<a asp-action="EntryCreate">Create a new Entry</a>
