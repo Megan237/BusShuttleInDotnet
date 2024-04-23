@@ -1,0 +1,47 @@
+@model IEnumerable<WebMvc.Models.StopViewModel>
+@{
+    ViewData["Title"] = "Map";
+}
+<h2>Map</h2>
+<a asp-action="HomeView">Back to List</a>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9P33QDKIkNN9JSLfCOgiwrKOThW-3EBk&callback=initMap">
+    </script>
+<div id="map" style="height: 400px; width: 100%;"></div>
+</tbody>
+<script>
+    function initMap() {
+        // Map options
+        var options = {
+            zoom: 8,
+            center: { lat: 37.7749, lng: -122.4194 } // Default center (San Francisco)
+        }
+
+        // New map
+        var map = new google.maps.Map(document.getElementById('map'), options);
+
+        // Add markers from model data
+        @foreach (var stop in Model)
+    {
+        @:addMarker({ lat: @stop.Latitude, lng: @stop.Longitude, content: '@stop.Name' });
+    }
+
+            // Function to add a marker
+            function addMarker(props) {
+                var marker = new google.maps.Marker({
+                    position: props,
+                    map: map,
+                });
+
+                if (props.content) {
+                    var infoWindow = new google.maps.InfoWindow({
+                        content: props.content
+                    });
+
+                    marker.addListener('click', function () {
+                        infoWindow.open(map, marker);
+                    });
+                }
+            }
+    }
+</script>

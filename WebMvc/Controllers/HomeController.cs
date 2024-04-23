@@ -675,6 +675,14 @@ public class HomeController : Controller
 
     }
 
+    [Authorize(Roles = "Manager")]
+    public IActionResult MapView()
+    {
+        _logger.LogDebug("Fetching all stops for Map viewing.");
+        return View(this.stopService.GetStops().Select(s => StopViewModel.FromStop(s)));
+
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Manager")]
