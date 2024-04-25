@@ -811,13 +811,13 @@ public class HomeController : Controller
             {
                 ModelState.AddModelError("", "Invalid username or password");
                 _logger.LogWarning("Login attempt failed for user {Username}.", user.UserName);
-                return View(user);
+                return View();
             }
         }
         else
         {
             _logger.LogWarning("Login attempt with invalid model state for user {Username}.", user.UserName);
-            return View(user);
+            return View();
         }
     }
 
